@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NOMADE:TP | Official</title>
+    <style>
+        :root { --zipper-color: #d1d1d1; }
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Helvetica Neue', sans-serif; }
+
+        /* 내부 콘텐츠 영역 */
+        .content-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            color: white; z-index: 1; text-align: center;
+        }
+        .brand-logo { 
+            font-size: 3.5rem; letter-spacing: 15px; margin-bottom: 30px; 
+            opacity: 0; transform: scale(0.9); transition: 1s ease-out;
+            font-weight: 200; 
+        }
+        .menu-list { list-style: none; padding: 0; }
+        .menu-list li { 
+            font-size: 1.2rem; margin: 20px 0; cursor: pointer; color: #888;
+            opacity: 0; transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            letter-spacing: 3px;
+        }
+        .menu-list li.visible { opacity: 1; transform: translateY(0); }
+        .menu-list li:hover { color: #fff; letter-spacing: 5px; }
+
+        /* 데님 지퍼 레이어 */
+        .zipper-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; }
+        .denim-side { 
+            width: 50%; height: 100%; 
+            background-image: url('https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover; background-position: center;
+            position: relative; transition: transform 0.15s ease-out;
+        }
+        .left-denim { border-right: 2px solid var(--zipper-color); }
+        .right-denim { border-left: 2px solid var(--zipper-color); }
+
+        /* 지퍼 손잡이 */
+        #puller {
+            position: absolute; top: 0; left: 50%; transform: translate(-50%, -20%);
+            width: 45px; height: 70px; z-index: 20; cursor: grab;
+            background: #aaa; border-radius: 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+        #puller::after { content: 'TP'; display: flex; justify-content: center; align-items: center; height: 100%; color: #333; font-weight: bold; font-size: 12px; }
+
+        .guide { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); color: #fff; z-index: 25; font-size: 10px; letter-spacing: 4px; opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+    <div class="content-layer">
+        <div class="brand-logo" id="logo">NOMADE:TP</div>
+        <ul class="menu-list">
+            <li class="m-item">JOURNEY</li>
+            <li class="m-item">COLLECTION</li>
+            <li class="m-item">ARCHIVE</li>
+            <li class="m-item">CONTACT</li>
+        </ul>
+    </div>
+
+    <div class="zipper-wrapper">
+        <div class="denim-side left-denim" id="left"></div>
+        <div class="denim-side right-denim" id="right"></div>
+        <div id="puller"></div>
+    </div>
+
+    <div class="guide">PULL TO EXPLORE</div>
+
+    <audio id="zip-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
+
+    <script>
+        const puller = document.getElementById('puller');
+        const left = document.getElementById('left');
+        const right = document.getElementById('right');
+        const logo = document.getElementById('logo');
+        const items = document.querySelectorAll('.m-item');
+        const sound = document.getElementById('zip-sound');
+
+        let isDragging = false;
+        let lastPos = 0;
+
+        const handleMove = (clientY) => {
+            const h = window.innerHeight;
+            let percent = (clientY / h) * 100;
+            if (percent < 0) percent = 0;
+            if (percent > 90) percent = 90;
+
+            // 지퍼 이동 및 벌어짐
+            puller.style.top = percent + '%';
+            left.style.transform = `translateX(-${percent}%) rotate(-${percent/15}deg)`;
+            right.style.transform = `translateX(${percent}%) rotate(${percent/15}deg)`;
+
+            // 사운드 재생 (움직임이 있을 때만 짧게 재생)
+            if (Math.abs(clientY - lastPos) > 5) {
+                sound.currentTime = 0;
+                sound.volume = 0.2;
+                sound.play().catch(() => {}); // 브라우저 정책 대응
+                lastPos = clientY;
+            }
+
+            // 브랜드명 및 메뉴 등장
+            if (percent > 15) {
+                logo.style.opacity = percent / 100;
+                logo.style.transform = `scale(${0.9 + (percent/1000)})`;
+                items.forEach((item, i) => {
+                    setTimeout(() => item.classList.add('visible'), i * 150);
+                });
+            }
+        };
+
+        // 이벤트 리스너 (마우스/터치)
+        puller.addEventListener('mousedown', () => isDragging = true);
+        window.addEventListener('mouseup', () => isDragging = false);
+        window.addEventListener('mousemove', (e) => isDragging && handleMove(e.clientY));
+
+        puller.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); });
+        window.addEventListener('touchend', () => isDragging = false);
+        window.addEventListener('touchmove', (e) => isDragging && handleMove(e.touches[0].clientY), {passive: false});
+    </script>
+</body>
+</html>
