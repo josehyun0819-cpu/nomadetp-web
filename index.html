@@ -7,91 +7,89 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Pretendard', sans-serif; }
 
-        /* 내부 콘텐츠 */
+        /* 배경 콘텐츠 */
         .content-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 1; background: #000;
+            z-index: 1; background: #050505;
         }
         .brand-logo { 
-            font-size: clamp(2rem, 10vw, 3.5rem); color: #fff; letter-spacing: 12px; 
-            opacity: 0; transform: scale(0.9); transition: 1.5s ease-out; font-weight: 100;
+            font-size: clamp(1.8rem, 8vw, 3rem); color: #fff; letter-spacing: 15px; 
+            font-weight: 100; opacity: 0; transform: translateY(10px); transition: 1s;
         }
-        .menu-list { list-style: none; padding: 0; margin-top: 30px; text-align: center; }
-        .menu-list li { 
-            font-size: 0.9rem; margin: 18px 0; color: #444; opacity: 0; 
-            transform: translateY(15px); transition: 1s; letter-spacing: 4px; text-transform: uppercase;
-        }
-        .menu-list li.visible { opacity: 1; transform: translateY(0); color: #fff; }
+        .menu-list { list-style: none; padding: 0; margin-top: 40px; text-align: center; }
+        .menu-list li { color: #444; margin: 15px 0; font-size: 0.8rem; letter-spacing: 4px; opacity: 0; transition: 0.8s; }
 
-        /* 데님 배경 - 이미지 속 느낌처럼 절제된 벌어짐 */
-        .zipper-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: flex; pointer-events: none; }
+        /* 리얼 데님 배경 (오른쪽 여자 바지 느낌의 워싱 블루) */
+        .zipper-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
         
         .denim-side { 
-            width: 50%; height: 100%; 
-            background-color: #1a2a44;
+            position: absolute; top: 0; width: 50%; height: 100%; 
+            background-color: #3b5271;
+            /* 데님 질감 + 페이딩 워싱 효과 */
             background-image: 
-                linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent),
-                repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
-            background-size: 4px 4px, 100% 3px;
-            position: relative;
-            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-            will-change: transform;
+                radial-gradient(circle at 70% 50%, rgba(255,255,255,0.15) 0%, transparent 60%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px),
+                url('https://www.transparenttextures.com/patterns/denim.png');
+            will-change: clip-path;
         }
-        /* 아래쪽은 맞물리게 하단 고정, 회전각도 축소(8도) */
-        .left-denim { border-right: 1px solid #000; transform-origin: bottom right; }
-        .right-denim { border-left: 1px solid #000; transform-origin: bottom left; }
+        .left-denim { left: 0; border-right: 1px solid rgba(0,0,0,0.3); }
+        .right-denim { right: 0; border-left: 1px solid rgba(0,0,0,0.3); }
 
-        /* 지퍼 이빨 디테일 */
+        /* 녹슬고 빈티지한 지퍼 디테일 */
         .left-denim::after, .right-denim::after {
-            content: ''; position: absolute; top: 0; width: 10px; height: 100%;
-            background: repeating-linear-gradient(to bottom, #333 0px, #333 4px, #777 5px, #333 6px);
+            content: ''; position: absolute; top: 0; width: 14px; height: 100%;
+            background: repeating-linear-gradient(to bottom, #222 0px, #222 4px, #5d4a37 5px, #222 6px); /* 황동색/녹슨 느낌 */
             background-size: 100% 10px;
         }
-        .left-denim::after { right: -1px; }
-        .right-denim::after { left: -1px; }
+        .left-denim::after { right: 0; }
+        .right-denim::after { left: 0; }
 
-        /* 지퍼 손잡이 */
+        /* 빈티지 지퍼 손잡이 (Brass/Rust 효과) */
         #puller {
-            position: absolute; top: 0; left: 50%; transform: translate(-50%, 0);
-            width: 50px; height: 80px; z-index: 20; cursor: grab;
-            transition: top 0s; 
+            position: absolute; top: 0; left: 50%; transform: translate(-50%, -20%);
+            width: 50px; height: 100px; z-index: 20; cursor: grab;
+            transition: top 0.1s linear;
         }
-        #puller.auto-gliding { transition: top 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
-
         .puller-tab {
-            width: 32px; height: 55px; background: linear-gradient(145deg, #666, #222);
-            margin: 10px auto; border-radius: 3px; border: 1px solid #111;
+            width: 34px; height: 65px; 
+            background: linear-gradient(145deg, #5d4a37, #2c1e14); /* 녹슨 황동색 그라데이션 */
+            margin: 10px auto; border-radius: 4px; border: 1px solid #1a110a;
             display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+            position: relative;
         }
-        .puller-tab::after { content: 'TP'; color: #000; font-weight: 900; font-size: 12px; opacity: 0.5; }
+        /* 지퍼 탭 위 부식된 질감 표현 */
+        .puller-tab::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(139,69,19,0.3) 10%, transparent 70%);
+        }
+        .puller-tab::after { content: 'TP'; color: #000; font-weight: 900; font-size: 13px; opacity: 0.4; }
 
-        .guide { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); color: #fff; z-index: 25; font-size: 9px; letter-spacing: 4px; opacity: 0.3; pointer-events: none; }
+        .guide { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); color: #fff; z-index: 25; font-size: 10px; letter-spacing: 5px; opacity: 0.3; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div class="content-layer">
         <div class="brand-logo" id="logo">NOMADE:TP</div>
-        <ul class="menu-list">
-            <li class="m-item">New Expedition</li>
-            <li class="m-item">Lookbook '26</li>
-            <li class="m-item">Store</li>
-            <li class="m-item">Contact</li>
+        <ul class="menu-list" id="menus">
+            <li>New Expedition</li>
+            <li>Lookbook '26</li>
+            <li>Store</li>
+            <li>Contact</li>
         </ul>
     </div>
 
-    <div class="zipper-wrapper">
+    <div class="zipper-container" id="container">
         <div class="denim-side left-denim" id="left"></div>
         <div class="denim-side right-denim" id="right"></div>
-    </div>
-    
-    <div id="puller">
-        <div class="puller-tab"></div>
+        <div id="puller">
+            <div class="puller-tab"></div>
+        </div>
     </div>
 
-    <div class="guide" id="guide-text">DRAG DOWN</div>
+    <div class="guide" id="guide-text">PULL DOWN</div>
 
     <audio id="zip-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
@@ -100,78 +98,11 @@
         const left = document.getElementById('left');
         const right = document.getElementById('right');
         const logo = document.getElementById('logo');
-        const items = document.querySelectorAll('.m-item');
+        const menuItems = document.querySelectorAll('.menu-list li');
         const sound = document.getElementById('zip-sound');
-        const guide = document.getElementById('guide-text');
-
+        
         let isDragging = false;
-        let isOpened = false;
-        let startY = 0;
+        let h = window.innerHeight;
 
-        const startDragging = (e) => {
-            if (isOpened) return;
-            isDragging = true;
-            startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            puller.style.cursor = 'grabbing';
-        };
-
-        const stopDragging = () => {
-            if (!isDragging || isOpened) return;
-            isDragging = false;
-            puller.style.cursor = 'grab';
-            
-            // 미달 시 복구
-            puller.style.transition = "top 0.4s ease";
-            puller.style.top = "0px";
-            setTimeout(() => { if(!isOpened) puller.style.transition = "0s"; }, 400);
-        };
-
-        const doMove = (e) => {
-            if (!isDragging || isOpened) return;
-            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            const diff = clientY - startY;
-
-            if (diff > 0) {
-                puller.style.top = diff + 'px';
-                // 80px 정도 내리면 자동 실행
-                if (diff > 80) {
-                    isOpened = true;
-                    isDragging = false;
-                    triggerAutoOpen();
-                }
-            }
-        };
-
-        const triggerAutoOpen = () => {
-            puller.classList.add('auto-gliding');
-            puller.style.top = '75%'; // 너무 밑까지 안 가도록 조정
-            
-            // 각도를 8도로 제한하여 과하지 않게 벌림
-            left.style.transform = "rotate(-8deg) translateX(-10%)";
-            right.style.transform = "rotate(8deg) translateX(10%)";
-            
-            sound.volume = 0.3;
-            sound.play();
-            
-            setTimeout(() => {
-                logo.style.opacity = "1";
-                logo.style.transform = "scale(1)";
-                items.forEach((item, i) => {
-                    setTimeout(() => item.classList.add('visible'), i * 150);
-                });
-            }, 500);
-
-            guide.style.opacity = "0";
-            puller.style.pointerEvents = "none";
-        };
-
-        puller.addEventListener('mousedown', startDragging);
-        window.addEventListener('mouseup', stopDragging);
-        window.addEventListener('mousemove', doMove);
-
-        puller.addEventListener('touchstart', (e) => { startDragging(e); }, {passive: false});
-        window.addEventListener('touchend', stopDragging);
-        window.addEventListener('touchmove', (e) => { doMove(e); }, {passive: false});
-    </script>
-</body>
-</html>
+        const updateVisuals = (y) => {
+            let p = (y / h) * 1
