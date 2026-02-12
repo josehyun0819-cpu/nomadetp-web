@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NOMADETP</title>
+<title>NOMADE:TP</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
+
 body{
   overflow:hidden;
   background:#000;
-  font-family:"Cormorant Garamond",serif;
 }
 
 /* ================= 데님 ================= */
@@ -31,7 +31,7 @@ body{
       #1a2a3f 2px,
       #1a2a3f 4px
     );
-  transition:transform 0.12s linear;
+  transition:transform 0.12s linear, opacity 0.4s ease;
   z-index:2;
 }
 
@@ -103,12 +103,26 @@ body{
   clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
 }
 
+/* ================= 중앙 콘텐츠 래퍼 ================= */
+
+.center-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
 /* ================= 로고 ================= */
 
 .logo{
   opacity:0;
-  transform:translateY(25px);
+  transform:translateY(20px);
   transition:opacity 0.8s ease, transform 0.8s ease;
+
+  font-family:'Playfair Display', serif;
+  font-size:44px;
+  font-weight:600;
+  letter-spacing:0.28em;
+  color:#ffffff;
 }
 
 .logo.show{
@@ -116,8 +130,31 @@ body{
   transform:translateY(0);
 }
 
-.logo img{
-  width:220px;
+.colon{
+  letter-spacing:0.1em;
+}
+
+/* ================= 메뉴 ================= */
+
+.menu{
+  margin-top:24px;
+  opacity:0;
+  transform:translateY(15px);
+  transition:opacity 0.8s ease, transform 0.8s ease;
+  font-family:'Playfair Display', serif;
+  font-size:12px;
+  letter-spacing:0.4em;
+  color:#bfbfbf;
+  cursor:pointer;
+}
+
+.menu.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.menu:hover{
+  color:#ffffff;
 }
 </style>
 </head>
@@ -133,8 +170,13 @@ body{
 </div>
 
 <div class="inside">
-  <div class="logo">
-    <img src="./assets/logo.png" alt="NOMADETP">
+  <div class="center-wrap">
+    <div class="logo">
+      NOMADE<span class="colon">:</span>TP
+    </div>
+    <div class="menu">
+      COLLECTION
+    </div>
   </div>
 </div>
 
@@ -142,24 +184,40 @@ body{
 const zipper = document.querySelector(".zipper-head");
 const inside = document.querySelector(".inside");
 const logo = document.querySelector(".logo");
+const menu = document.querySelector(".menu");
 const zipperLine = document.querySelector(".zipper-line");
+const denimLeft = document.querySelector(".denim-left");
+const denimRight = document.querySelector(".denim-right");
 
 let dragging = false;
 let opened = false;
 
 function openZipper(){
   opened = true;
+
   inside.classList.add("open");
+
+  // 페이드 아웃
+  denimLeft.style.opacity = 0;
+  denimRight.style.opacity = 0;
   zipperLine.style.opacity = 0;
   zipper.style.opacity = 0;
 
+  // 완전 제거 후 로고 + 메뉴 등장
   setTimeout(()=>{
+    denimLeft.style.display = "none";
+    denimRight.style.display = "none";
+    zipperLine.style.display = "none";
+    zipper.style.display = "none";
+
     logo.classList.add("show");
-  },600);
+    menu.classList.add("show");
+  },500);
 }
 
 function move(y){
   if(opened) return;
+
   let progress = Math.min(y / window.innerHeight, 1);
   document.body.style.setProperty("--progress", progress);
   zipper.style.top = (progress * window.innerHeight) + "px";
