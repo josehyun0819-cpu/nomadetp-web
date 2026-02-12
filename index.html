@@ -7,7 +7,7 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Pretendard', sans-serif; touch-action: none; }
 
-        /* [1] 배경 콘텐츠: 로고와 메뉴가 가려지지 않게 배치 */
+        /* [1] 고정된 배경 콘텐츠 */
         .content-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -15,12 +15,14 @@
         }
         .brand-logo { 
             font-size: clamp(2rem, 10vw, 3.5rem); color: #fff; letter-spacing: 15px; 
-            font-weight: 100; opacity: 0; transition: 0.5s;
+            font-weight: 100; opacity: 1; /* 가려진 상태에서 지퍼로 확인하는 것이므로 기본 opacity 1 */
         }
-        .menu-list { list-style: none; padding: 0; margin-top: 40px; text-align: center; color: #fff; opacity: 0; transition: 0.8s; }
+        .menu-list { 
+            list-style: none; padding: 0; margin-top: 40px; text-align: center; color: #fff;
+        }
         .menu-list li { margin: 15px 0; font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; }
 
-        /* [2] 데님 레이어: 화면 꽉 채움 */
+        /* [2] 화면을 꽉 채운 데님 레이어 (가만히 고정) */
         .zipper-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
         
         .denim-side { 
@@ -30,10 +32,10 @@
             background-repeat: no-repeat;
             will-change: clip-path;
         }
-        .left-denim { left: 0; background-position: left center; border-right: 1px solid rgba(255,255,255,0.1); }
-        .right-denim { right: 0; background-position: right center; border-left: 1px solid rgba(255,255,255,0.1); }
+        .left-denim { left: 0; background-position: left center; border-right: 1px solid rgba(255,255,255,0.05); }
+        .right-denim { right: 0; background-position: right center; border-left: 1px solid rgba(255,255,255,0.05); }
 
-        /* 지퍼 이빨 */
+        /* 빈티지 지퍼 이빨 */
         .left-denim::after, .right-denim::after {
             content: ''; position: absolute; top: 0; width: 14px; height: 100%;
             background: repeating-linear-gradient(to bottom, #111 0px, #111 4px, #5d4a37 5px, #111 6px);
@@ -42,7 +44,7 @@
         .left-denim::after { right: -1px; }
         .right-denim::after { left: -1px; }
 
-        /* [3] 빈티지 지퍼 손잡이 */
+        /* [3] 녹슨 지퍼 손잡이 */
         #puller {
             position: absolute; top: 0; left: 50%; transform: translate(-50%, 0);
             width: 50px; height: 110px; z-index: 20; cursor: grab; pointer-events: auto;
@@ -53,15 +55,13 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center;
         }
         .puller-tab::after { content: 'TP'; color: #000; font-weight: 900; font-size: 13px; opacity: 0.3; }
-
-        .guide { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); color: #fff; z-index: 25; font-size: 10px; letter-spacing: 5px; opacity: 0.4; }
     </style>
 </head>
 <body>
 
     <div class="content-layer">
-        <div class="brand-logo" id="logo">NOMADE:TP</div>
-        <ul class="menu-list" id="menus">
+        <div class="brand-logo">NOMADE:TP</div>
+        <ul class="menu-list">
             <li>New Expedition</li>
             <li>Lookbook '26</li>
             <li>Store</li>
@@ -76,14 +76,10 @@
     
     <div id="puller"><div class="puller-tab"></div></div>
 
-    <div class="guide" id="guide-txt">PULL DOWN</div>
-
     <script>
         const puller = document.getElementById('puller');
         const left = document.getElementById('left');
         const right = document.getElementById('right');
-        const logo = document.getElementById('logo');
-        const menus = document.getElementById('menus');
         const h = window.innerHeight;
 
         let isDragging = false;
@@ -97,15 +93,12 @@
 
             puller.style.top = y + 'px';
 
-            // [핵심 수정] 로고가 가려지지 않도록 벌어지는 너비(gap)를 넉넉하게 조정
-            // p / 3.2 정도로 설정하여 로고의 전체 가로폭이 충분히 드러나게 함
-            const gap = p / 3.2; 
+            // [핵심] 로고가 가려지지 않을 만큼만 벌어지는 너비
+            // 지퍼 위치(p%)까지만 원단이 벌어지며 하단은 여전히 닫혀 있음
+            const gap = p / 2.8; 
             
             left.style.clipPath = `polygon(0% 0%, ${100 - gap}% 0%, 100% ${p}%, 100% 100%, 0% 100%)`;
             right.style.clipPath = `polygon(${gap}% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${p}%)`;
-
-            logo.style.opacity = p / 40;
-            if (p > 45) menus.style.opacity = (p - 45) / 40;
         };
 
         const onStart = (e) => {
@@ -125,25 +118,29 @@
             if (currentY > h * 0.95) currentY = h * 0.95;
             updateVisuals(currentY);
 
+            // 살짝 내리면 자동으로 끝까지 내려가는 동작 유지
             if (currentY > h * 0.15 && isDragging) {
                 isDragging = false;
-                autoGlide(h * 0.92);
+                const duration = "1.5s cubic-bezier(0.15, 0, 0.15, 1)";
+                puller.style.transition = `top ${duration}`;
+                left.style.transition = `clip-path ${duration}`;
+                right.style.transition = `clip-path ${duration}`;
+                currentY = h * 0.92;
+                updateVisuals(currentY);
             }
-        };
-
-        const autoGlide = (target) => {
-            const duration = "1.5s cubic-bezier(0.15, 0, 0.15, 1)";
-            puller.style.transition = `top ${duration}`;
-            left.style.transition = `clip-path ${duration}`;
-            right.style.transition = `clip-path ${duration}`;
-            currentY = target;
-            updateVisuals(currentY);
         };
 
         const onEnd = () => {
             if (!isDragging) return;
             isDragging = false;
-            if (currentY < h * 0.15) autoGlide(0);
+            if (currentY < h * 0.15) {
+                const duration = "0.5s ease-out";
+                puller.style.transition = `top ${duration}`;
+                left.style.transition = `clip-path ${duration}`;
+                right.style.transition = `clip-path ${duration}`;
+                currentY = 0;
+                updateVisuals(0);
+            }
         };
 
         puller.addEventListener('mousedown', onStart);
