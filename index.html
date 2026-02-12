@@ -49,3 +49,142 @@ body{height:100vh;background:#000;overflow:hidden;}
   margin:0 12px;
   text-decoration:none;
   opacity:0;
+  transition:0.6s ease;
+}
+
+/* Denim */
+.denim{
+  position:absolute;
+  top:0;
+  width:50%;
+  height:100%;
+  background:url('./assets/denim.jpg') center/cover no-repeat;
+  z-index:2;
+  transition:transform 0.1s linear;
+}
+
+.left{left:0;}
+.right{right:0;}
+
+/* Zipper */
+.zipper-line{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  height:100%;
+  width:4px;
+  background:linear-gradient(to bottom,#aaa,#777);
+  z-index:3;
+}
+
+.zip-handle{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:22px;
+  height:28px;
+  background:silver;
+  border-radius:4px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.5);
+  cursor:grab;
+  z-index:4;
+}
+</style>
+</head>
+
+<body>
+
+<section class="zip-section">
+
+<div class="inside">
+  <h1 class="logo">N O M A D E : T P</h1>
+  <nav class="menu">
+    <a href="#">New Expedition</a>
+    <a href="#">Lookbook ’26</a>
+    <a href="#">Store</a>
+    <a href="#">Contact</a>
+  </nav>
+</div>
+
+<div class="denim left"></div>
+<div class="denim right"></div>
+
+<div class="zipper-line"></div>
+<div class="zip-handle"></div>
+
+</section>
+
+<script>
+const handle = document.querySelector(".zip-handle");
+const left = document.querySelector(".left");
+const right = document.querySelector(".right");
+const logo = document.querySelector(".logo");
+const menuLinks = document.querySelectorAll(".menu a");
+
+let isDragging=false;
+let maxHeight=window.innerHeight;
+let currentY=0;
+let opened=false;
+
+function update(progress){
+  left.style.transform=`translateX(-${progress*100}%)`;
+  right.style.transform=`translateX(${progress*100}%)`;
+  handle.style.top=`${progress*maxHeight}px`;
+
+  if(progress>0.6){
+    logo.style.opacity=1;
+    logo.style.transform="translateY(0)";
+    menuLinks.forEach((link,i)=>{
+      setTimeout(()=>{link.style.opacity=1;},i*80);
+    });
+  }
+}
+
+function autoOpen(){
+  if(opened) return;
+  opened=true;
+
+  let progress=currentY/maxHeight;
+
+  function animate(){
+    progress+=0.02;
+    if(progress>=1) progress=1;
+    update(progress);
+    if(progress<1){
+      requestAnimationFrame(animate);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+handle.addEventListener("mousedown",()=>{
+  if(opened) return;
+  isDragging=true;
+  handle.style.cursor="grabbing";
+});
+
+window.addEventListener("mouseup",()=>{
+  if(isDragging && currentY>maxHeight*0.1){
+    autoOpen();
+  }
+  isDragging=false;
+  handle.style.cursor="grab";
+});
+
+window.addEventListener("mousemove",(e)=>{
+  if(!isDragging || opened) return;
+
+  let y=e.clientY;
+  if(y<0) y=0;
+  if(y>maxHeight) y=maxHeight;
+
+  currentY=y;
+  let progress=y/maxHeight;
+
+  update(progress);
+});
+</script>
+
+</body>
+</html>
