@@ -11,12 +11,12 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
   overflow:hidden;
-  font-family:"Cormorant Garamond",serif;
   background:#000;
-  color:#fff;
+  font-family:"Cormorant Garamond",serif;
 }
 
 /* ================= 데님 ================= */
+
 .denim-left,
 .denim-right{
   position:fixed;
@@ -30,10 +30,9 @@ body{
       #1c2d44 2px,
       #1a2a3f 2px,
       #1a2a3f 4px
-    ),
-    linear-gradient(145deg,#243a56,#16283c);
-  transition:transform 0.15s linear;
-  z-index:1;
+    );
+  transition:transform 0.12s linear;
+  z-index:2;
 }
 
 .denim-left{left:0;}
@@ -46,66 +45,48 @@ body{
   transform:translateX(calc(100% * var(--progress,0)));
 }
 
-/* ================= 지퍼 ================= */
+/* ================= 중앙 지퍼 라인 ================= */
+
+.zipper-line{
+  position:fixed;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:10px;
+  height:100%;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      #d6d6d6 0px,
+      #a5a5a5 6px,
+      #5c5c5c 12px
+    );
+  z-index:3;
+  transition:opacity 0.4s ease;
+}
+
+/* ================= 지퍼 헤드 ================= */
+
 .zipper-head{
   position:absolute;
   left:50%;
   top:0;
   transform:translateX(-50%);
-  width:44px;
-  height:64px;
+  width:42px;
+  height:60px;
   cursor:grab;
-  z-index:10;
+  z-index:4;
 }
 
 .metal{
   width:100%;
   height:100%;
-  background:linear-gradient(145deg,#f5f5f5,#a0a0a0 40%,#666);
-  border-radius:8px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.6);
-  position:relative;
-  overflow:hidden;
+  background:linear-gradient(#dcdcdc,#8e8e8e);
+  border-radius:6px;
 }
 
-.metal::after{
-  content:"";
-  position:absolute;
-  top:-50%;
-  left:-100%;
-  width:60%;
-  height:200%;
-  background:linear-gradient(
-    120deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.8) 50%,
-    rgba(255,255,255,0) 100%
-  );
-  transform:rotate(25deg);
-}
+/* ================= 내부 ================= */
 
-.metal.shine::after{
-  animation:shimmer 0.8s ease forwards;
-}
-
-@keyframes shimmer{
-  0%{left:-100%;opacity:0;}
-  50%{opacity:0.9;}
-  100%{left:150%;opacity:0;}
-}
-
-.ring{
-  position:absolute;
-  width:22px;
-  height:22px;
-  border:3px solid #ccc;
-  border-radius:50%;
-  top:-18px;
-  left:50%;
-  transform:translateX(-50%);
-}
-
-/* ================= 내부 공간 ================= */
 .inside{
   position:absolute;
   inset:0;
@@ -113,107 +94,30 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  flex-direction:column;
   clip-path:polygon(50% 0%,50% 0%,50% 100%,50% 100%);
-  transition:clip-path 1s cubic-bezier(.77,0,.18,1);
-  z-index:0;
+  transition:clip-path 0.8s ease;
+  z-index:1;
 }
 
 .inside.open{
   clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
 }
 
-/* 로고 */
+/* ================= 로고 ================= */
+
 .logo{
   opacity:0;
-  transform:translateY(20px) scale(0.98);
-  transition:opacity 1.2s ease,
-             transform 1.2s cubic-bezier(.77,0,.18,1);
-  margin-bottom:25px;
-}
-
-.logo img{
-  width:220px;
+  transform:translateY(25px);
+  transition:opacity 0.8s ease, transform 0.8s ease;
 }
 
 .logo.show{
   opacity:1;
-  transform:translateY(0) scale(1);
+  transform:translateY(0);
 }
 
-/* 메뉴 */
-.menu{
-  opacity:0;
-  transition:1s;
-}
-
-.menu a{
-  text-decoration:none;
-  color:#fff;
-  letter-spacing:0.4em;
-  font-size:14px;
-}
-
-/* ================= 카테고리 ================= */
-.category-layer{
-  position:absolute;
-  inset:0;
-  display:grid;
-  grid-template-columns:repeat(2,260px);
-  grid-template-rows:repeat(2,360px);
-  justify-content:center;
-  align-content:center;
-  gap:60px 80px;
-  opacity:0;
-  pointer-events:none;
-  transition:0.6s;
-}
-
-.frame{
-  border:1px solid rgba(255,255,255,0.3);
-  position:relative;
-  overflow:hidden;
-  cursor:pointer;
-  opacity:0;
-  transform:translateY(40px);
-  transition:0.6s;
-}
-
-.frame-inner{
-  position:absolute;
-  inset:0;
-  background:linear-gradient(#222,#000);
-}
-
-.frame span{
-  position:absolute;
-  bottom:18px;
-  left:50%;
-  transform:translateX(-50%);
-  letter-spacing:0.3em;
-}
-
-.frame.expand{
-  position:fixed;
-  inset:0;
-  width:100vw;
-  height:100vh;
-  border:none;
-  z-index:50;
-}
-
-/* 상세 */
-.category-detail{
-  position:absolute;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:40px;
-  letter-spacing:0.3em;
-  opacity:0;
-  background:#000;
-  transition:1s;
+.logo img{
+  width:220px;
 }
 </style>
 </head>
@@ -222,96 +126,59 @@ body{
 <div class="denim-left"></div>
 <div class="denim-right"></div>
 
+<div class="zipper-line"></div>
+
 <div class="zipper-head">
-  <div class="metal"><div class="ring"></div></div>
+  <div class="metal"></div>
 </div>
 
 <div class="inside">
   <div class="logo">
     <img src="./assets/logo.png" alt="NOMADETP">
   </div>
-
-  <div class="menu">
-    <a href="#">COLLECTION</a>
-  </div>
-
-  <div class="category-layer">
-    <div class="frame" data-cat="TOP"><div class="frame-inner"></div><span>TOP</span></div>
-    <div class="frame" data-cat="BOTTOM"><div class="frame-inner"></div><span>BOTTOM</span></div>
-    <div class="frame" data-cat="SET"><div class="frame-inner"></div><span>SET</span></div>
-    <div class="frame" data-cat="ACCESSORY"><div class="frame-inner"></div><span>ACCESSORY</span></div>
-  </div>
-
-  <div class="category-detail"></div>
 </div>
 
 <script>
-const zipper=document.querySelector(".zipper-head");
-const inside=document.querySelector(".inside");
-const logo=document.querySelector(".logo");
-const menu=document.querySelector(".menu");
-const metal=document.querySelector(".metal");
+const zipper = document.querySelector(".zipper-head");
+const inside = document.querySelector(".inside");
+const logo = document.querySelector(".logo");
+const zipperLine = document.querySelector(".zipper-line");
 
-let dragging=false;
-let opened=false;
+let dragging = false;
+let opened = false;
 
 function openZipper(){
-  opened=true;
+  opened = true;
   inside.classList.add("open");
-  metal.classList.add("shine");
-  zipper.style.opacity=0;
+  zipperLine.style.opacity = 0;
+  zipper.style.opacity = 0;
+
   setTimeout(()=>{
     logo.classList.add("show");
-    menu.style.opacity=1;
-  },1000);
+  },600);
 }
 
 function move(y){
   if(opened) return;
-  let progress=Math.min(y/window.innerHeight,1);
-  document.body.style.setProperty("--progress",progress);
-  zipper.style.top=(progress*window.innerHeight)+"px";
-  if(progress>0.45) openZipper();
+  let progress = Math.min(y / window.innerHeight, 1);
+  document.body.style.setProperty("--progress", progress);
+  zipper.style.top = (progress * window.innerHeight) + "px";
+
+  if(progress > 0.45){
+    openZipper();
+  }
 }
 
 zipper.addEventListener("mousedown",()=>dragging=true);
 window.addEventListener("mouseup",()=>dragging=false);
-window.addEventListener("mousemove",(e)=>{if(dragging) move(e.clientY);});
+window.addEventListener("mousemove",(e)=>{
+  if(dragging) move(e.clientY);
+});
 
 zipper.addEventListener("touchstart",()=>dragging=true);
 window.addEventListener("touchend",()=>dragging=false);
-window.addEventListener("touchmove",(e)=>{if(dragging) move(e.touches[0].clientY);});
-
-/* 메뉴 */
-const menuBtn=document.querySelector(".menu a");
-const layer=document.querySelector(".category-layer");
-const frames=document.querySelectorAll(".frame");
-const detail=document.querySelector(".category-detail");
-
-menuBtn.addEventListener("click",(e)=>{
-  e.preventDefault();
-  layer.style.opacity=1;
-  layer.style.pointerEvents="auto";
-  logo.style.opacity=0;
-  menu.style.opacity=0;
-
-  frames.forEach((f,i)=>{
-    setTimeout(()=>{
-      f.style.opacity=1;
-      f.style.transform="translateY(0)";
-    },i*150);
-  });
-});
-
-frames.forEach(frame=>{
-  frame.addEventListener("click",()=>{
-    frames.forEach(f=>{ if(f!==frame) f.style.opacity=0; });
-    frame.classList.add("expand");
-    setTimeout(()=>{
-      detail.innerHTML=frame.dataset.cat;
-      detail.style.opacity=1;
-    },600);
-  });
+window.addEventListener("touchmove",(e)=>{
+  if(dragging) move(e.touches[0].clientY);
 });
 </script>
 
