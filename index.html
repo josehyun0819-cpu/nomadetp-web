@@ -2,127 +2,98 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>NOMADE:TP</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
 body{
   overflow:hidden;
   background:#000;
+  font-family:'Playfair Display', serif;
 }
 
-/* ================= 데님 ================= */
+/* ================= ZIPPER INTRO ================= */
 
-.denim-left,
-.denim-right{
+.intro{
   position:fixed;
-  top:0;
-  width:50%;
-  height:100%;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #1c2d44 0px,
-      #1c2d44 2px,
-      #1a2a3f 2px,
-      #1a2a3f 4px
-    );
-  transition:transform 0.12s linear, opacity 0.4s ease;
-  z-index:2;
-}
-
-.denim-left{left:0;}
-.denim-right{right:0;}
-
-.denim-left{
-  transform:translateX(calc(-100% * var(--progress,0)));
-}
-.denim-right{
-  transform:translateX(calc(100% * var(--progress,0)));
-}
-
-/* ================= 중앙 지퍼 라인 ================= */
-
-.zipper-line{
-  position:fixed;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:10px;
-  height:100%;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      #d6d6d6 0px,
-      #a5a5a5 6px,
-      #5c5c5c 12px
-    );
-  z-index:3;
-  transition:opacity 0.4s ease;
-}
-
-/* ================= 지퍼 헤드 ================= */
-
-.zipper-head{
-  position:absolute;
-  left:50%;
-  top:0;
-  transform:translateX(-50%);
-  width:42px;
-  height:60px;
-  cursor:grab;
-  z-index:4;
-}
-
-.metal{
-  width:100%;
-  height:100%;
-  background:linear-gradient(#dcdcdc,#8e8e8e);
-  border-radius:6px;
-}
-
-/* ================= 내부 ================= */
-
-.inside{
-  position:absolute;
   inset:0;
-  background:#0b0b0b;
+  background:url("https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=1974&auto=format&fit=crop") center/cover no-repeat;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  z-index:10;
+  transition:transform 1s cubic-bezier(.77,0,.18,1);
+}
+
+/* 지퍼 라인 */
+.zipper-line{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:4px;
+  background:linear-gradient(to bottom,#888,#ccc,#888);
+  left:50%;
+  transform:translateX(-50%);
+  transition:opacity 0.5s ease;
+}
+
+/* 지퍼 손잡이 */
+.zipper-handle{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:40px;
+  height:60px;
+  background:linear-gradient(145deg,#d0d0d0,#888);
+  border-radius:8px;
+  cursor:grab;
+  transition:transform 0.2s;
+}
+
+.zipper-handle:active{
+  cursor:grabbing;
+}
+
+.intro.open{
+  transform:translateY(-100%);
+}
+
+.intro.open .zipper-line{
+  opacity:0;
+}
+
+/* ================= MAIN INSIDE ================= */
+
+.main{
+  position:fixed;
+  inset:0;
+  background:#000;
   display:flex;
   justify-content:center;
   align-items:center;
-  clip-path:polygon(50% 0%,50% 0%,50% 100%,50% 100%);
-  transition:clip-path 0.8s ease;
+  flex-direction:column;
+  color:white;
   z-index:1;
 }
 
-.inside.open{
-  clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
-}
-
-/* ================= 중앙 콘텐츠 래퍼 ================= */
-
-.center-wrap{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-/* ================= 로고 ================= */
-
+/* 로고 */
 .logo{
+  font-size:60px;
+  letter-spacing:0.4em;
   opacity:0;
-  transform:translateY(20px);
-  transition:opacity 0.8s ease, transform 0.8s ease;
-
-  font-family:'Playfair Display', serif;
-  font-size:44px;
-  font-weight:600;
-  letter-spacing:0.28em;
-  color:#ffffff;
+  transform:translateY(30px);
+  transition:all 1s cubic-bezier(.77,0,.18,1);
 }
 
 .logo.show{
@@ -130,18 +101,12 @@ body{
   transform:translateY(0);
 }
 
-.colon{
-  letter-spacing:0.1em;
-}
-
-/* ================= 메뉴 ================= */
-
+/* 메뉴 */
 .menu{
   margin-top:24px;
   opacity:0;
   transform:translateY(15px);
   transition:opacity 0.8s ease, transform 0.8s ease;
-  font-family:'Playfair Display', serif;
   font-size:12px;
   letter-spacing:0.4em;
   color:#bfbfbf;
@@ -156,88 +121,185 @@ body{
 .menu:hover{
   color:#ffffff;
 }
+
+/* ================= COLLECTION SECTION ================= */
+
+.collection-section{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.8s ease;
+  z-index:5;
+}
+
+.collection-section.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* FRAME GRID */
+
+.frame-wrapper{
+  width:80%;
+  max-width:1000px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:60px;
+}
+
+.frame{
+  height:280px;
+  border:1px solid rgba(255,255,255,0.2);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:22px;
+  letter-spacing:0.3em;
+  transition:all 0.8s cubic-bezier(.77,0,.18,1);
+  opacity:0;
+  transform:translateY(40px);
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+}
+
+.collection-section.active .frame{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.collection-section.active .frame:nth-child(1){ transition-delay:0.2s; }
+.collection-section.active .frame:nth-child(2){ transition-delay:0.3s; }
+.collection-section.active .frame:nth-child(3){ transition-delay:0.4s; }
+.collection-section.active .frame:nth-child(4){ transition-delay:0.5s; }
+
+.frame:hover{
+  border-color:white;
+  transform:scale(1.03);
+}
+
+/* 액자 클릭 후 */
+
+.frame.active{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  z-index:20;
+  background:#000;
+  border:none;
+  font-size:40px;
+}
+
+.frame.hide{
+  opacity:0;
+  pointer-events:none;
+}
+
 </style>
 </head>
 <body>
 
-<div class="denim-left"></div>
-<div class="denim-right"></div>
-
-<div class="zipper-line"></div>
-
-<div class="zipper-head">
-  <div class="metal"></div>
+<!-- ZIPPER INTRO -->
+<div class="intro">
+  <div class="zipper-line"></div>
+  <div class="zipper-handle"></div>
 </div>
 
-<div class="inside">
-  <div class="center-wrap">
-    <div class="logo">
-      NOMADE<span class="colon">:</span>TP
-    </div>
-    <div class="menu">
-      COLLECTION
-    </div>
+<!-- MAIN -->
+<div class="main">
+  <div class="logo">NOMADE:TP</div>
+  <div class="menu">COLLECTION</div>
+</div>
+
+<!-- COLLECTION -->
+<div class="collection-section">
+  <div class="frame-wrapper">
+    <div class="frame">TOP</div>
+    <div class="frame">BOTTOM</div>
+    <div class="frame">SET</div>
+    <div class="frame">ACCESSORY</div>
   </div>
 </div>
 
 <script>
-const zipper = document.querySelector(".zipper-head");
-const inside = document.querySelector(".inside");
+
+const intro = document.querySelector(".intro");
+const handle = document.querySelector(".zipper-handle");
 const logo = document.querySelector(".logo");
 const menu = document.querySelector(".menu");
-const zipperLine = document.querySelector(".zipper-line");
-const denimLeft = document.querySelector(".denim-left");
-const denimRight = document.querySelector(".denim-right");
+const collectionSection = document.querySelector(".collection-section");
+const frames = document.querySelectorAll(".frame");
 
-let dragging = false;
-let opened = false;
+let startY = 0;
+let dragged = false;
 
-function openZipper(){
-  opened = true;
+/* ZIPPER DRAG (PC + MOBILE) */
 
-  inside.classList.add("open");
+handle.addEventListener("mousedown",(e)=>{
+  startY = e.clientY;
+  dragged = true;
+});
 
-  // 페이드 아웃
-  denimLeft.style.opacity = 0;
-  denimRight.style.opacity = 0;
-  zipperLine.style.opacity = 0;
-  zipper.style.opacity = 0;
+window.addEventListener("mouseup",()=>{
+  if(dragged){
+    intro.classList.add("open");
+    setTimeout(()=>{
+      logo.classList.add("show");
+      menu.classList.add("show");
+    },800);
+  }
+  dragged=false;
+});
 
-  // 완전 제거 후 로고 + 메뉴 등장
+handle.addEventListener("touchstart",(e)=>{
+  startY = e.touches[0].clientY;
+});
+
+handle.addEventListener("touchend",()=>{
+  intro.classList.add("open");
   setTimeout(()=>{
-    denimLeft.style.display = "none";
-    denimRight.style.display = "none";
-    zipperLine.style.display = "none";
-    zipper.style.display = "none";
-
     logo.classList.add("show");
     menu.classList.add("show");
-  },500);
-}
-
-function move(y){
-  if(opened) return;
-
-  let progress = Math.min(y / window.innerHeight, 1);
-  document.body.style.setProperty("--progress", progress);
-  zipper.style.top = (progress * window.innerHeight) + "px";
-
-  if(progress > 0.45){
-    openZipper();
-  }
-}
-
-zipper.addEventListener("mousedown",()=>dragging=true);
-window.addEventListener("mouseup",()=>dragging=false);
-window.addEventListener("mousemove",(e)=>{
-  if(dragging) move(e.clientY);
+  },800);
 });
 
-zipper.addEventListener("touchstart",()=>dragging=true);
-window.addEventListener("touchend",()=>dragging=false);
-window.addEventListener("touchmove",(e)=>{
-  if(dragging) move(e.touches[0].clientY);
+/* COLLECTION CLICK */
+
+menu.addEventListener("click",()=>{
+
+  logo.style.opacity = 0;
+  logo.style.transform = "translateY(-20px)";
+  menu.style.opacity = 0;
+  menu.style.transform = "translateY(-20px)";
+
+  setTimeout(()=>{
+    collectionSection.classList.add("active");
+  },400);
+
 });
+
+/* FRAME CLICK */
+
+frames.forEach(frame=>{
+  frame.addEventListener("click",()=>{
+
+    frames.forEach(f=>{
+      if(f !== frame){
+        f.classList.add("hide");
+      }
+    });
+
+    frame.classList.add("active");
+
+  });
+});
+
 </script>
 
 </body>
