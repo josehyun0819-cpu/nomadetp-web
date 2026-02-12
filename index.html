@@ -4,21 +4,25 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NOMADETP</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;500;700&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
   overflow:hidden;
   font-family:"Cormorant Garamond",serif;
-  background:#0f1722;
-  color:white;
+  background:#000;
+  color:#fff;
 }
 
-/* ===== 데님 ===== */
-.denim{
+/* ================= 데님 ================= */
+.denim-left,
+.denim-right{
   position:fixed;
-  inset:0;
+  top:0;
+  width:50%;
+  height:100%;
   background:
     repeating-linear-gradient(
       90deg,
@@ -28,9 +32,80 @@ body{
       #1a2a3f 4px
     ),
     linear-gradient(145deg,#243a56,#16283c);
+  transition:transform 0.15s linear;
+  z-index:1;
 }
 
-/* ===== 안쪽 공간 ===== */
+.denim-left{left:0;}
+.denim-right{right:0;}
+
+.denim-left{
+  transform:translateX(calc(-100% * var(--progress,0)));
+}
+.denim-right{
+  transform:translateX(calc(100% * var(--progress,0)));
+}
+
+/* ================= 지퍼 ================= */
+.zipper-head{
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:44px;
+  height:64px;
+  cursor:grab;
+  z-index:10;
+}
+
+.metal{
+  width:100%;
+  height:100%;
+  background:linear-gradient(145deg,#f5f5f5,#a0a0a0 40%,#666);
+  border-radius:8px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.6);
+  position:relative;
+  overflow:hidden;
+}
+
+.metal::after{
+  content:"";
+  position:absolute;
+  top:-50%;
+  left:-100%;
+  width:60%;
+  height:200%;
+  background:linear-gradient(
+    120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.8) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  transform:rotate(25deg);
+}
+
+.metal.shine::after{
+  animation:shimmer 0.8s ease forwards;
+}
+
+@keyframes shimmer{
+  0%{left:-100%;opacity:0;}
+  50%{opacity:0.9;}
+  100%{left:150%;opacity:0;}
+}
+
+.ring{
+  position:absolute;
+  width:22px;
+  height:22px;
+  border:3px solid #ccc;
+  border-radius:50%;
+  top:-18px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+/* ================= 내부 공간 ================= */
 .inside{
   position:absolute;
   inset:0;
@@ -40,84 +115,46 @@ body{
   align-items:center;
   flex-direction:column;
   clip-path:polygon(50% 0%,50% 0%,50% 100%,50% 100%);
-  transition:clip-path 1.2s cubic-bezier(.77,0,.18,1);
+  transition:clip-path 1s cubic-bezier(.77,0,.18,1);
+  z-index:0;
 }
 
 .inside.open{
   clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
 }
 
-/* ===== 지퍼 SVG ===== */
-.zipper{
-  position:absolute;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:80px;
-  height:100%;
-  z-index:10;
-  pointer-events:none;
-}
-
-.zipper svg{
-  width:100%;
-  height:100%;
-}
-
-/* 손잡이 */
-.zipper-head{
-  position:absolute;
-  left:50%;
-  transform:translate(-50%,0);
-  top:0;
-  width:42px;
-  height:60px;
-  cursor:grab;
-  z-index:20;
-}
-
-.zipper-head .metal{
-  width:100%;
-  height:100%;
-  background:linear-gradient(145deg,#f5f5f5,#9a9a9a 40%,#666);
-  border-radius:8px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.5);
-  position:relative;
-}
-
-.zipper-head .ring{
-  position:absolute;
-  width:20px;
-  height:20px;
-  border:3px solid #ccc;
-  border-radius:50%;
-  top:-15px;
-  left:50%;
-  transform:translateX(-50%);
-}
-
-/* ===== 내부 로고 ===== */
+/* 로고 */
 .logo{
-  font-size:50px;
-  letter-spacing:0.5em;
-  margin-bottom:25px;
   opacity:0;
-  transition:1s;
+  transform:translateY(20px) scale(0.98);
+  transition:opacity 1.2s ease,
+             transform 1.2s cubic-bezier(.77,0,.18,1);
+  margin-bottom:25px;
 }
 
+.logo img{
+  width:220px;
+}
+
+.logo.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+/* 메뉴 */
 .menu{
   opacity:0;
   transition:1s;
 }
 
 .menu a{
-  color:white;
   text-decoration:none;
+  color:#fff;
   letter-spacing:0.4em;
   font-size:14px;
 }
 
-/* ===== 카테고리 ===== */
+/* ================= 카테고리 ================= */
 .category-layer{
   position:absolute;
   inset:0;
@@ -129,12 +166,12 @@ body{
   gap:60px 80px;
   opacity:0;
   pointer-events:none;
-  transition:0.8s;
+  transition:0.6s;
 }
 
 .frame{
-  position:relative;
   border:1px solid rgba(255,255,255,0.3);
+  position:relative;
   overflow:hidden;
   cursor:pointer;
   opacity:0;
@@ -145,7 +182,7 @@ body{
 .frame-inner{
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg,#222,#000);
+  background:linear-gradient(#222,#000);
 }
 
 .frame span{
@@ -153,7 +190,7 @@ body{
   bottom:18px;
   left:50%;
   transform:translateX(-50%);
-  letter-spacing:0.4em;
+  letter-spacing:0.3em;
 }
 
 .frame.expand{
@@ -162,53 +199,38 @@ body{
   width:100vw;
   height:100vh;
   border:none;
-  z-index:1000;
+  z-index:50;
 }
 
-/* ===== 상세 ===== */
+/* 상세 */
 .category-detail{
   position:absolute;
   inset:0;
-  background:black;
   display:flex;
   justify-content:center;
   align-items:center;
   font-size:40px;
   letter-spacing:0.3em;
   opacity:0;
+  background:#000;
   transition:1s;
 }
-
 </style>
 </head>
 <body>
 
-<div class="denim"></div>
-
-<!-- 지퍼 -->
-<div class="zipper">
-<svg viewBox="0 0 40 1000" preserveAspectRatio="none">
-  <rect x="18" y="0" width="4" height="1000" fill="#bbb"/>
-  <!-- 톱니 -->
-  <g fill="#ddd">
-    <rect x="10" y="0" width="10" height="6"/>
-    <rect x="20" y="6" width="10" height="6"/>
-    <rect x="10" y="12" width="10" height="6"/>
-    <rect x="20" y="18" width="10" height="6"/>
-    <!-- 반복 느낌 -->
-  </g>
-</svg>
-</div>
+<div class="denim-left"></div>
+<div class="denim-right"></div>
 
 <div class="zipper-head">
-  <div class="metal">
-    <div class="ring"></div>
-  </div>
+  <div class="metal"><div class="ring"></div></div>
 </div>
 
-<!-- 내부 -->
 <div class="inside">
-  <div class="logo">NOMADETP</div>
+  <div class="logo">
+    <img src="./assets/logo.png" alt="NOMADETP">
+  </div>
+
   <div class="menu">
     <a href="#">COLLECTION</a>
   </div>
@@ -224,55 +246,52 @@ body{
 </div>
 
 <script>
-
-const zipperHead=document.querySelector(".zipper-head");
+const zipper=document.querySelector(".zipper-head");
 const inside=document.querySelector(".inside");
 const logo=document.querySelector(".logo");
 const menu=document.querySelector(".menu");
+const metal=document.querySelector(".metal");
 
 let dragging=false;
 let opened=false;
 
 function openZipper(){
-  inside.classList.add("open");
-  zipperHead.style.opacity=0;
   opened=true;
+  inside.classList.add("open");
+  metal.classList.add("shine");
+  zipper.style.opacity=0;
   setTimeout(()=>{
-    logo.style.opacity=1;
+    logo.classList.add("show");
     menu.style.opacity=1;
-  },800);
+  },1000);
 }
 
 function move(y){
   if(opened) return;
-  zipperHead.style.top=y+"px";
-  if(y>window.innerHeight*0.4){
-    openZipper();
-  }
+  let progress=Math.min(y/window.innerHeight,1);
+  document.body.style.setProperty("--progress",progress);
+  zipper.style.top=(progress*window.innerHeight)+"px";
+  if(progress>0.45) openZipper();
 }
 
-zipperHead.addEventListener("mousedown",()=>dragging=true);
+zipper.addEventListener("mousedown",()=>dragging=true);
 window.addEventListener("mouseup",()=>dragging=false);
-window.addEventListener("mousemove",(e)=>{
-  if(dragging) move(e.clientY);
-});
+window.addEventListener("mousemove",(e)=>{if(dragging) move(e.clientY);});
 
-zipperHead.addEventListener("touchstart",()=>dragging=true);
+zipper.addEventListener("touchstart",()=>dragging=true);
 window.addEventListener("touchend",()=>dragging=false);
-window.addEventListener("touchmove",(e)=>{
-  if(dragging) move(e.touches[0].clientY);
-});
+window.addEventListener("touchmove",(e)=>{if(dragging) move(e.touches[0].clientY);});
 
 /* 메뉴 */
 const menuBtn=document.querySelector(".menu a");
-const categoryLayer=document.querySelector(".category-layer");
+const layer=document.querySelector(".category-layer");
 const frames=document.querySelectorAll(".frame");
 const detail=document.querySelector(".category-detail");
 
 menuBtn.addEventListener("click",(e)=>{
   e.preventDefault();
-  categoryLayer.style.opacity=1;
-  categoryLayer.style.pointerEvents="auto";
+  layer.style.opacity=1;
+  layer.style.pointerEvents="auto";
   logo.style.opacity=0;
   menu.style.opacity=0;
 
@@ -284,20 +303,17 @@ menuBtn.addEventListener("click",(e)=>{
   });
 });
 
-/* 액자 클릭 */
 frames.forEach(frame=>{
   frame.addEventListener("click",()=>{
-    frames.forEach(f=>{
-      if(f!==frame) f.style.opacity=0;
-    });
+    frames.forEach(f=>{ if(f!==frame) f.style.opacity=0; });
     frame.classList.add("expand");
     setTimeout(()=>{
       detail.innerHTML=frame.dataset.cat;
       detail.style.opacity=1;
-    },700);
+    },600);
   });
 });
-
 </script>
+
 </body>
 </html>
