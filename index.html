@@ -8,136 +8,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*{margin:0;padding:0;box-sizing:border-box;}
+body{height:100vh;background:#000;overflow:hidden;}
+
+.zip-section{
+  position:relative;
+  width:100%;
+  height:100vh;
+  overflow:hidden;
 }
 
-body {
-  height: 200vh;
-  background: #000;
-  overflow-x: hidden;
+/* Inside */
+.inside{
+  position:absolute;
+  inset:0;
+  background:#0f0f0f;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:1;
 }
 
-.zip-section {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
+.logo{
+  font-family:"Cormorant Garamond",serif;
+  font-weight:300;
+  font-size:48px;
+  letter-spacing:0.4em;
+  color:white;
+  margin-bottom:30px;
+  opacity:0;
+  transform:translateY(20px);
+  transition:0.6s ease;
 }
 
-/* ===== Inside World (맨 아래 레이어) ===== */
-.inside {
-  position: absolute;
-  inset: 0;
-  background: #0f0f0f;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo {
-  font-family: "Cormorant Garamond", serif;
-  font-weight: 300;
-  font-size: 48px;
-  letter-spacing: 0.4em;
-  color: white;
-  margin-bottom: 30px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: 0.6s ease;
-}
-
-.menu a {
-  font-family: "Inter", sans-serif;
-  font-size: 14px;
-  color: #ccc;
-  margin: 0 12px;
-  text-decoration: none;
-  opacity: 0;
-  transition: 0.6s ease;
-}
-
-/* ===== Denim (위에 덮임) ===== */
-.denim {
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  background: url('./assets/denim.jpg') center/cover no-repeat;
-  z-index: 2;
-}
-
-.left { left: 0; }
-.right { right: 0; }
-
-/* ===== Zipper ===== */
-.zipper {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 100%;
-  width: 4px;
-  background: linear-gradient(to bottom, #aaa, #777);
-  z-index: 3;
-}
-
-.zip-handle {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 18px;
-  height: 24px;
-  background: silver;
-  border-radius: 4px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-}
-</style>
-</head>
-
-<body>
-
-<section class="zip-section">
-
-  <!-- 내부 세계 (항상 뒤에 있음) -->
-  <div class="inside">
-    <h1 class="logo">N O M A D E : T P</h1>
-    <nav class="menu">
-      <a href="#">New Expedition</a>
-      <a href="#">Lookbook ’26</a>
-      <a href="#">Store</a>
-      <a href="#">Contact</a>
-    </nav>
-  </div>
-
-  <!-- 데님이 위에 덮고 있음 -->
-  <div class="denim left"></div>
-  <div class="denim right"></div>
-
-  <!-- 지퍼 -->
-  <div class="zipper">
-    <div class="zip-handle"></div>
-  </div>
-
-</section>
-
-<script>
-const left = document.querySelector(".left");
-const right = document.querySelector(".right");
-const handle = document.querySelector(".zip-handle");
-const logo = document.querySelector(".logo");
-const menuLinks = document.querySelectorAll(".menu a");
-
-window.addEventListener("scroll", () => {
-  const scrollY = window.scrollY;
-  const maxScroll = window.innerHeight;
-  const progress = Math.min(scrollY / maxScroll, 1);
-
-  // 지퍼 손잡이 내려가기
-  handle.style.top = `${progress * 100}%`;
-
-  // 데님이 갈라지기
-  left.style.transform = `translateX(-${progress * 100}%)`;
-  right.style.transform = `translateX(${progress
+.menu a{
+  font-family:"Inter",sans-serif;
+  font-size:14px;
+  color:#ccc;
+  margin:0 12px;
+  text-decoration:none;
+  opacity:0;
