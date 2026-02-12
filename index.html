@@ -7,32 +7,33 @@
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: 'Pretendard', sans-serif; touch-action: none; }
 
-        /* 내부 콘텐츠 (로고 및 메뉴) */
+        /* [1] 배경 콘텐츠: 로고와 메뉴가 가려지지 않게 배치 */
         .content-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 5; background: #050505;
+            z-index: 1; background: #050505;
         }
         .brand-logo { 
             font-size: clamp(2rem, 10vw, 3.5rem); color: #fff; letter-spacing: 15px; 
-            font-weight: 100; opacity: 0; transform: translateY(20px); transition: 1s ease-out;
+            font-weight: 100; opacity: 0; transition: 0.5s;
         }
-        .menu-list { list-style: none; padding: 0; margin-top: 40px; text-align: center; opacity: 0; transition: 1.2s ease-out; }
-        .menu-list li { color: #fff; margin: 15px 0; font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; }
+        .menu-list { list-style: none; padding: 0; margin-top: 40px; text-align: center; color: #fff; opacity: 0; transition: 0.8s; }
+        .menu-list li { margin: 15px 0; font-size: 0.9rem; letter-spacing: 5px; text-transform: uppercase; }
 
-        /* 데님 레이어 */
+        /* [2] 데님 레이어: 화면 꽉 채움 */
         .zipper-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
         
         .denim-side { 
-            position: absolute; top: 0; width: 50%; height: 100%; 
-            background-image: url('https://images.unsplash.com/photo-1541099649105-f69ad21f3246?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');
-            background-size: 200% 100%;
+            position: absolute; top: 0; width: 50.5%; height: 100%; 
+            background-image: url('https://images.unsplash.com/photo-1541099649105-f69ad21f3246?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=90');
+            background-size: cover;
+            background-repeat: no-repeat;
             will-change: clip-path;
         }
-        .left-denim { left: 0; background-position: left center; border-right: 1px solid rgba(0,0,0,0.3); }
-        .right-denim { right: 0; background-position: right center; border-left: 1px solid rgba(0,0,0,0.3); }
+        .left-denim { left: 0; background-position: left center; border-right: 1px solid rgba(255,255,255,0.1); }
+        .right-denim { right: 0; background-position: right center; border-left: 1px solid rgba(255,255,255,0.1); }
 
-        /* 빈티지 지퍼 이빨 */
+        /* 지퍼 이빨 */
         .left-denim::after, .right-denim::after {
             content: ''; position: absolute; top: 0; width: 14px; height: 100%;
             background: repeating-linear-gradient(to bottom, #111 0px, #111 4px, #5d4a37 5px, #111 6px);
@@ -41,22 +42,19 @@
         .left-denim::after { right: -1px; }
         .right-denim::after { left: -1px; }
 
-        /* 녹슨 지퍼 손잡이 */
+        /* [3] 빈티지 지퍼 손잡이 */
         #puller {
             position: absolute; top: 0; left: 50%; transform: translate(-50%, 0);
-            width: 50px; height: 110px; z-index: 20; cursor: grab;
-            pointer-events: auto;
+            width: 50px; height: 110px; z-index: 20; cursor: grab; pointer-events: auto;
         }
         .puller-tab {
-            width: 38px; height: 70px; 
-            background: linear-gradient(145deg, #5d4a37, #2c1e14);
+            width: 38px; height: 70px; background: linear-gradient(145deg, #5d4a37, #2c1e14);
             margin: 0 auto; border-radius: 4px; border: 1px solid #111;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center;
         }
         .puller-tab::after { content: 'TP'; color: #000; font-weight: 900; font-size: 13px; opacity: 0.3; }
 
-        .guide { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); color: #fff; z-index: 25; font-size: 10px; letter-spacing: 5px; opacity: 0.4; pointer-events: none; }
+        .guide { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); color: #fff; z-index: 25; font-size: 10px; letter-spacing: 5px; opacity: 0.4; }
     </style>
 </head>
 <body>
@@ -78,7 +76,7 @@
     
     <div id="puller"><div class="puller-tab"></div></div>
 
-    <div class="guide" id="guide-text">PULL DOWN TO REVEAL</div>
+    <div class="guide" id="guide-txt">PULL DOWN</div>
 
     <script>
         const puller = document.getElementById('puller');
@@ -93,26 +91,21 @@
         let currentY = 0;
 
         const updateVisuals = (y) => {
-            // 지퍼가 화면 끝까지 내려가도록 95%까지 허용
             let p = (y / h) * 100;
             if (p < 0) p = 0;
             if (p > 95) p = 95;
 
             puller.style.top = y + 'px';
 
-            // 10도 정도의 슬림한 각도로 순차적으로 벌어짐
-            const gap = p / 6.5; 
-            left.style.clipPath = `polygon(0% 0%, ${100-gap}% 0%, 100% ${p}%, 100% 100%, 0% 100%)`;
+            // [핵심 수정] 로고가 가려지지 않도록 벌어지는 너비(gap)를 넉넉하게 조정
+            // p / 3.2 정도로 설정하여 로고의 전체 가로폭이 충분히 드러나게 함
+            const gap = p / 3.2; 
+            
+            left.style.clipPath = `polygon(0% 0%, ${100 - gap}% 0%, 100% ${p}%, 100% 100%, 0% 100%)`;
             right.style.clipPath = `polygon(${gap}% 0%, 100% 0%, 100% 100%, 0% 100%, 0% ${p}%)`;
 
-            // 지퍼 위치에 따라 로고와 메뉴가 서서히 나타남
-            if (p > 20) {
-                logo.style.opacity = (p - 20) / 40;
-                logo.style.transform = `translateY(${20 - (p/5)}px)`;
-            }
-            if (p > 60) {
-                menus.style.opacity = (p - 60) / 30;
-            }
+            logo.style.opacity = p / 40;
+            if (p > 45) menus.style.opacity = (p - 45) / 40;
         };
 
         const onStart = (e) => {
@@ -128,16 +121,13 @@
             if (!isDragging) return;
             const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             currentY = clientY - startY;
-            
             if (currentY < 0) currentY = 0;
             if (currentY > h * 0.95) currentY = h * 0.95;
-            
             updateVisuals(currentY);
 
-            // 15% 이상 당기면 "관성"으로 끝까지 시원하게 오픈
             if (currentY > h * 0.15 && isDragging) {
                 isDragging = false;
-                autoGlide(h * 0.92); // 화면 하단부까지 쭈욱
+                autoGlide(h * 0.92);
             }
         };
 
