@@ -16,6 +16,7 @@ body{
   font-family:"Inter",sans-serif;
 }
 
+/* ZIP SECTION */
 .zip-section{
   position:fixed;
   top:0;
@@ -24,7 +25,7 @@ body{
   overflow:hidden;
 }
 
-/* Inside */
+/* INSIDE */
 .inside{
   position:absolute;
   inset:0;
@@ -34,30 +35,34 @@ body{
   align-items:center;
   justify-content:center;
   z-index:1;
+  perspective:1000px;
 }
 
 .logo{
   font-family:"Cormorant Garamond",serif;
-  font-weight:300;
   font-size:42px;
   letter-spacing:0.4em;
   color:white;
   margin-bottom:30px;
   opacity:0;
-  transform:translateY(30px);
+  transform:translateY(40px);
   transition:1s ease;
+}
+
+.menu{
+  display:flex;
 }
 
 .menu a{
   font-size:14px;
   color:#ccc;
-  margin:0 12px;
+  margin:0 14px;
   text-decoration:none;
   opacity:0;
   transition:1s ease;
 }
 
-/* Denim */
+/* DENIM */
 .denim{
   position:absolute;
   top:0;
@@ -66,38 +71,25 @@ body{
   background:url('./assets/denim.jpg') center/cover no-repeat;
   z-index:2;
   transition:transform 0.2s ease-out;
+  animation:denimMove 20s linear infinite;
 }
 
-.denim::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  background:linear-gradient(120deg,
-    rgba(255,255,255,0.08),
-    rgba(0,0,0,0.3));
-  mix-blend-mode:overlay;
+@keyframes denimMove{
+  0%{background-position:50% 50%;}
+  50%{background-position:52% 48%;}
+  100%{background-position:50% 50%;}
 }
 
 .left{left:0;}
 .right{right:0;}
 
-/* Zipper */
+/* ZIPPER */
 .zipper-line{
   position:absolute;
   left:50%;
   transform:translateX(-50%);
   height:100%;
-  width:26px;
-  z-index:3;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  transition:opacity 0.4s ease;
-}
-
-.teeth{
-  width:8px;
-  height:100%;
+  width:10px;
   background:repeating-linear-gradient(
     to bottom,
     #bbb 0px,
@@ -105,6 +97,8 @@ body{
     #888 6px,
     #888 12px
   );
+  z-index:3;
+  transition:opacity 0.4s ease;
 }
 
 .zip-handle{
@@ -116,7 +110,7 @@ body{
   height:32px;
   background:linear-gradient(#ddd,#999);
   border-radius:6px;
-  box-shadow:0 6px 15px rgba(0,0,0,0.6);
+  box-shadow:0 6px 18px rgba(0,0,0,0.7);
   cursor:grab;
   z-index:4;
   transition:opacity 0.4s ease;
@@ -141,10 +135,7 @@ body{
 <div class="denim left"></div>
 <div class="denim right"></div>
 
-<div class="zipper-line">
-  <div class="teeth"></div>
-</div>
-
+<div class="zipper-line"></div>
 <div class="zip-handle"></div>
 
 </section>
@@ -156,19 +147,20 @@ const left=document.querySelector(".left");
 const right=document.querySelector(".right");
 const logo=document.querySelector(".logo");
 const menuLinks=document.querySelectorAll(".menu a");
+const inside=document.querySelector(".inside");
 
 let isDragging=false;
 let maxHeight=window.innerHeight;
 let currentY=0;
 let opened=false;
 
-/* === 금속 사운드 === */
+/* 사운드 */
 function playZipSound(){
   const ctx=new (window.AudioContext||window.webkitAudioContext)();
   const osc=ctx.createOscillator();
   const gain=ctx.createGain();
   osc.type="sawtooth";
-  osc.frequency.value=120;
+  osc.frequency.value=130;
   gain.gain.setValueAtTime(0.05,ctx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.4);
   osc.connect(gain);
@@ -177,24 +169,30 @@ function playZipSound(){
   osc.stop(ctx.currentTime+0.4);
 }
 
-/* === 업데이트 === */
+/* 업데이트 */
 function update(progress){
 
-  /* 초반 저항감 */
   if(progress<0.15){
     progress*=0.5;
   }
 
+  /* 90% 근처 진동 */
+  if(progress>0.9 && progress<0.98){
+    handle.style.transform=
+      `translateX(-50%) translateY(${Math.sin(Date.now()*0.05)*3}px)`;
+  }else{
+    handle.style.transform="translateX(-50%)";
+  }
+
   left.style.transform=`translateX(-${progress*100}%)`;
   right.style.transform=`translateX(${progress*100}%)`;
-
   handle.style.top=`${progress*maxHeight}px`;
 
   if(progress>0.6){
     logo.style.opacity=1;
     logo.style.transform="translateY(0)";
     menuLinks.forEach((link,i)=>{
-      setTimeout(()=>{link.style.opacity=1;},i*80);
+      setTimeout(()=>{link.style.opacity=1;},i*100);
     });
   }
 
@@ -205,12 +203,11 @@ function update(progress){
   }
 }
 
-/* 자동 완전 오픈 */
+/* 자동 오픈 */
 function autoOpen(){
   if(opened) return;
   opened=true;
   playZipSound();
-
   let progress=currentY/maxHeight;
 
   function animate(){
@@ -224,7 +221,7 @@ function autoOpen(){
   requestAnimationFrame(animate);
 }
 
-/* 데스크탑 */
+/* 드래그 */
 handle.addEventListener("mousedown",()=>{
   if(opened) return;
   isDragging=true;
@@ -242,10 +239,8 @@ window.addEventListener("mouseup",()=>{
 window.addEventListener("mousemove",(e)=>{
   if(!isDragging||opened) return;
   let y=e.clientY;
-  if(y<0) y=0;
-  if(y>maxHeight) y=maxHeight;
-  currentY=y;
-  update(y/maxHeight);
+  currentY=Math.max(0,Math.min(maxHeight,y));
+  update(currentY/maxHeight);
 });
 
 /* 모바일 */
@@ -258,10 +253,8 @@ window.addEventListener("touchstart",(e)=>{
 window.addEventListener("touchmove",(e)=>{
   if(!isDragging||opened) return;
   let y=e.touches[0].clientY;
-  if(y<0) y=0;
-  if(y>maxHeight) y=maxHeight;
-  currentY=y;
-  update(y/maxHeight);
+  currentY=Math.max(0,Math.min(maxHeight,y));
+  update(currentY/maxHeight);
 });
 
 window.addEventListener("touchend",()=>{
@@ -269,6 +262,16 @@ window.addEventListener("touchend",()=>{
     autoOpen();
   }
   isDragging=false;
+});
+
+/* === 패럴랙스 === */
+document.addEventListener("mousemove",(e)=>{
+  if(!opened) return;
+  const x=(e.clientX/window.innerWidth-0.5)*10;
+  const y=(e.clientY/window.innerHeight-0.5)*10;
+  logo.style.transform=`translate(${x}px,${y}px)`;
+  document.querySelector(".menu").style.transform=
+    `translate(${x*0.6}px,${y*0.6}px)`;
 });
 </script>
 
