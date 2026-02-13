@@ -599,13 +599,8 @@ window.addEventListener("keydown",(e)=>{
 function restoreFromHash(){
   const h = (location.hash || "").replace("#","");
 
-  // 해시 없으면 초기 느낌으로
-  if(!h){
-    closeModal();
-    closeCategory();
-    collectionSection.classList.remove("active");
-    return;
-  }
+  // 해시 없으면 아무 것도 복원하지 않음(로비 유지)
+  if(!h) return;
 
   if(h === "collection"){
     if(!opened) openZipper();
@@ -646,17 +641,20 @@ function restoreFromHash(){
   }
 }
 
-// 새로고침 시 항상 로비 상태로 초기화
-if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
-  history.replaceState(null, "", window.location.pathname);
-}
-
-// 해시 변경 감지
 window.addEventListener("hashchange", restoreFromHash);
-
-// 처음 로드 시
 restoreFromHash();
-  
+
+/* ✅ 새로고침(reload)하면 자동으로 지퍼 열고 로고 화면으로 */
+const navEntry = performance.getEntriesByType("navigation")[0];
+if (navEntry && navEntry.type === "reload") {
+  // 기존 hash 제거(복원 로직 충돌 방지)
+  history.replaceState(null, "", window.location.pathname);
+
+  // 살짝 템포 후 지퍼 자동 오픈
+  setTimeout(() => {
+    openZipper();
+  }, 300);
+}
 </script>
 
 </body>
