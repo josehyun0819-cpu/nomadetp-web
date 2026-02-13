@@ -646,8 +646,17 @@ function restoreFromHash(){
   }
 }
 
+// 새로고침 시 항상 로비 상태로 초기화
+if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
+  history.replaceState(null, "", window.location.pathname);
+}
+
+// 해시 변경 감지
 window.addEventListener("hashchange", restoreFromHash);
+
+// 처음 로드 시
 restoreFromHash();
+  
 </script>
 
 </body>
