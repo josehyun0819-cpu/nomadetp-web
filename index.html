@@ -33,9 +33,7 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 .zipper-head{
   position:absolute;left:50%;top:0;transform:translateX(-50%);
   width:42px;height:60px;cursor:grab;z-index:4;
-
-  /* ✅ 모바일에서 스크롤/바운스 섞임 방지 */
-  touch-action:none;
+  touch-action:none; /* 모바일 스크롤/바운스 방지 */
 }
 .zipper-head:active{cursor:grabbing;}
 .metal{width:100%;height:100%;background:linear-gradient(#dcdcdc,#8e8e8e);border-radius:6px;}
@@ -105,7 +103,7 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 }
 .category-page.active{opacity:1;pointer-events:auto;}
 
-/* ✅ BACK을 진짜 왼쪽 상단에 고정 */
+/* BACK: 왼쪽 상단 고정 */
 .back-btn{
   position:absolute;
   top:24px; left:24px;
@@ -124,15 +122,45 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   top:30px; left:50%;
   transform:translateX(-50%);
   z-index:24;
-
   font-size:18px;letter-spacing:0.35em;
   opacity:0.9;
   text-align:center;
-  pointer-events:none; /* 클릭 방해 X */
+  pointer-events:none;
+}
+
+/* ✅ Controls (Search / Sort / Price) */
+.controls{
+  position:absolute;
+  top:78px; left:24px; right:24px;
+  display:flex; gap:12px; align-items:center;
+  z-index:24;
+}
+.search{
+  flex:1;
+  border:1px solid rgba(255,255,255,0.18);
+  background:transparent;
+  color:#fff;
+  padding:12px 14px;
+  border-radius:999px;
+  font-size:12px;
+  letter-spacing:0.22em;
+  outline:none;
+}
+.search::placeholder{ color:rgba(255,255,255,0.5); }
+.sort,.price{
+  border:1px solid rgba(255,255,255,0.18);
+  background:#000;
+  color:#fff;
+  padding:12px 14px;
+  border-radius:999px;
+  font-size:12px;
+  letter-spacing:0.18em;
+  outline:none;
+  cursor:pointer;
 }
 
 .grid{
-  position:absolute;left:24px;right:24px;top:90px;bottom:24px;
+  position:absolute;left:24px;right:24px;top:130px;bottom:24px;
   overflow:auto;
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -143,7 +171,9 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   .grid{grid-template-columns:repeat(2, minmax(0,1fr));}
 }
 @media (max-width: 520px){
-  .grid{grid-template-columns:repeat(1, minmax(0,1fr));}
+  .controls{flex-direction:column; align-items:stretch;}
+  .sort,.price,.search{width:100%;}
+  .grid{ top:170px; }
 }
 
 .card{
@@ -229,7 +259,6 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 <div class="denim-right"></div>
 <div class="zipper-line"></div>
 
-<!-- ✅ 접근성: role/tabindex/aria -->
 <div class="zipper-head" role="button" tabindex="0" aria-label="지퍼 열기">
   <div class="metal"></div>
 </div>
@@ -254,6 +283,24 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 <div class="category-page" aria-hidden="true">
   <button class="back-btn" type="button">BACK</button>
   <div class="category-title">CATEGORY</div>
+
+  <!-- ✅ Controls -->
+  <div class="controls">
+    <input class="search" type="text" placeholder="SEARCH" aria-label="상품 검색" />
+    <select class="sort" aria-label="정렬">
+      <option value="new">NEW</option>
+      <option value="price_asc">PRICE ↑</option>
+      <option value="price_desc">PRICE ↓</option>
+      <option value="name_asc">NAME A→Z</option>
+    </select>
+    <select class="price" aria-label="가격 필터">
+      <option value="all">PRICE: ALL</option>
+      <option value="0-80000">~ 80,000</option>
+      <option value="80000-150000">80,000 - 150,000</option>
+      <option value="150000-9999999">150,000+</option>
+    </select>
+  </div>
+
   <div class="grid"></div>
 </div>
 
@@ -293,6 +340,10 @@ const categoryTitle = document.querySelector(".category-title");
 const grid = document.querySelector(".grid");
 const backBtn = document.querySelector(".back-btn");
 
+const searchEl = document.querySelector(".search");
+const sortEl = document.querySelector(".sort");
+const priceEl = document.querySelector(".price");
+
 const modal = document.querySelector(".modal");
 const modalTitle = document.querySelector(".modal-title");
 const modalDesc = document.querySelector(".modal-desc");
@@ -302,6 +353,9 @@ let dragging = false;
 let opened = false;
 
 const OPEN_THRESHOLD = 0.45;
+
+let currentCat = null;
+let currentItems = [];
 
 const DATA = {
   TOP: [
@@ -331,7 +385,7 @@ function openZipper(){
 
   inside.classList.add("open");
 
-  /* ✅ 잔상 클릭 방지: pointer-events 같이 끄기 */
+  // 잔상 클릭 방지
   [denimLeft, denimRight, zipperLine, zipper].forEach(el => {
     el.style.pointerEvents = "none";
     el.style.opacity = 0;
@@ -350,7 +404,7 @@ function openZipper(){
 
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-/* ✅ 지퍼가 화면 밖으로 안 나가게 clamp + 진행률 계산도 안정화 */
+// 지퍼 위치 clamp + 진행률 안정화
 function move(y){
   if(opened) return;
 
@@ -358,7 +412,8 @@ function move(y){
   const zipperH = zipper.offsetHeight || 60;
 
   const clampedY = clamp(y, 0, vh - zipperH);
-  const progress = (vh - zipperH) > 0 ? (clampedY / (vh - zipperH)) : 0;
+  const denom = (vh - zipperH);
+  const progress = denom > 0 ? (clampedY / denom) : 0;
 
   document.body.style.setProperty("--progress", progress.toFixed(4));
   zipper.style.top = clampedY + "px";
@@ -373,14 +428,14 @@ zipper.addEventListener("mousedown", startDrag);
 window.addEventListener("mouseup", endDrag);
 window.addEventListener("mousemove",(e)=>{ if(dragging) move(e.clientY); });
 
-/* ✅ 모바일: preventDefault + passive:false */
+// 모바일: preventDefault + passive:false
 zipper.addEventListener("touchstart",(e)=>{ startDrag(); e.preventDefault(); }, {passive:false});
 window.addEventListener("touchend", endDrag);
 window.addEventListener("touchmove",(e)=>{
   if(dragging){ e.preventDefault(); move(e.touches[0].clientY); }
 }, {passive:false});
 
-/* ✅ 키보드 접근: Enter/Space */
+// 키보드 접근: Enter/Space
 zipper.addEventListener("keydown",(e)=>{
   if(e.key==="Enter" || e.key===" "){
     e.preventDefault();
@@ -392,18 +447,46 @@ function openCollection(){
   logo.classList.remove("show");
   menu.classList.remove("show");
   setTimeout(()=> collectionSection.classList.add("active"), 300);
+  location.hash = "collection";
 }
 menu.addEventListener("click", openCollection);
 menu.addEventListener("keydown",(e)=>{
   if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openCollection(); }
 });
 
-function renderCategory(cat){
-  categoryTitle.textContent = cat;
-  grid.innerHTML = "";
+function parsePriceKRW(s){
+  return Number(String(s).replace(/[^\d]/g,"")) || 0;
+}
 
-  const items = DATA[cat] || [];
-  items.forEach((p)=>{
+function applyControlsAndRender(){
+  const q = (searchEl?.value || "").trim().toLowerCase();
+  const sort = sortEl?.value || "new";
+  const pr = priceEl?.value || "all";
+
+  let list = [...currentItems];
+
+  if(q){
+    list = list.filter(p => p.name.toLowerCase().includes(q));
+  }
+
+  if(pr !== "all"){
+    const [min,max] = pr.split("-").map(Number);
+    list = list.filter(p=>{
+      const v = parsePriceKRW(p.price);
+      return v >= min && v <= max;
+    });
+  }
+
+  if(sort === "price_asc"){
+    list.sort((a,b)=>parsePriceKRW(a.price)-parsePriceKRW(b.price));
+  }else if(sort === "price_desc"){
+    list.sort((a,b)=>parsePriceKRW(b.price)-parsePriceKRW(a.price));
+  }else if(sort === "name_asc"){
+    list.sort((a,b)=>a.name.localeCompare(b.name));
+  }
+
+  grid.innerHTML = "";
+  list.forEach((p)=>{
     const card = document.createElement("div");
     card.className = "card";
     card.setAttribute("role","button");
@@ -418,7 +501,11 @@ function renderCategory(cat){
       </div>
     `;
 
-    const open = ()=> openModal(cat, p);
+    const open = ()=> {
+      openModal(currentCat, p);
+      location.hash = `product=${encodeURIComponent(currentCat)}|${encodeURIComponent(p.name)}`;
+    };
+
     card.addEventListener("click", open);
     card.addEventListener("keydown",(e)=>{
       if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); }
@@ -428,16 +515,36 @@ function renderCategory(cat){
   });
 }
 
+function renderCategory(cat){
+  currentCat = cat;
+  categoryTitle.textContent = cat;
+  currentItems = DATA[cat] || [];
+
+  if(searchEl) searchEl.value = "";
+  if(sortEl) sortEl.value = "new";
+  if(priceEl) priceEl.value = "all";
+
+  applyControlsAndRender();
+}
+
+[searchEl, sortEl, priceEl].forEach(el=>{
+  if(!el) return;
+  el.addEventListener("input", applyControlsAndRender);
+  el.addEventListener("change", applyControlsAndRender);
+});
+
 function openCategory(cat){
   renderCategory(cat);
   categoryPage.classList.add("active");
   categoryPage.setAttribute("aria-hidden","false");
+  location.hash = `category=${encodeURIComponent(cat)}`;
 }
 
 function closeCategory(){
   categoryPage.classList.remove("active");
   categoryPage.setAttribute("aria-hidden","true");
   closeModal();
+  location.hash = "collection";
 }
 
 frames.forEach(frame=>{
@@ -464,7 +571,7 @@ function closeModal(){
   modal.setAttribute("aria-hidden","true");
 }
 
-/* ✅ 모달 닫기 경로(버튼/배경/ESC) */
+// 모달 닫기 경로(버튼/배경/ESC)
 modalClose.addEventListener("click", closeModal);
 modal.addEventListener("click",(e)=>{ if(e.target === modal) closeModal(); });
 
@@ -474,6 +581,44 @@ window.addEventListener("keydown",(e)=>{
     else if(categoryPage.classList.contains("active")) closeCategory();
   }
 });
+
+/* ✅ 새로고침/뒤로가기 복원: hash 라우팅 */
+function restoreFromHash(){
+  const h = (location.hash || "").replace("#","");
+  if(!h) return;
+
+  if(h === "collection"){
+    if(!opened) openZipper();
+    collectionSection.classList.add("active");
+    return;
+  }
+
+  if(h.startsWith("category=")){
+    const cat = decodeURIComponent(h.split("category=")[1] || "");
+    if(cat){
+      if(!opened) openZipper();
+      collectionSection.classList.add("active");
+      openCategory(cat);
+    }
+    return;
+  }
+
+  if(h.startsWith("product=")){
+    const raw = decodeURIComponent(h.split("product=")[1] || "");
+    const [cat, name] = raw.split("|");
+    if(cat && name){
+      if(!opened) openZipper();
+      collectionSection.classList.add("active");
+      openCategory(cat);
+
+      const item = (DATA[cat] || []).find(p=>p.name === name);
+      if(item) openModal(cat, item);
+    }
+  }
+}
+
+window.addEventListener("hashchange", restoreFromHash);
+restoreFromHash();
 </script>
 
 </body>
