@@ -11,88 +11,91 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', serif;}
 
-/* ================= 데님 (리얼 원단 딥 인디고) ================= */
+/* =========================================================
+   ✅ 실사 데님 (레퍼런스 이미지 기반)
+   - index.html과 같은 폴더에 ref.png 를 두면 실사처럼 나옴
+   - 좌/우 패널이 같은 사진을 반씩 보여주면서 지퍼로 갈라짐
+========================================================= */
 .denim-left,.denim-right{
   position:fixed; top:0; width:50%; height:100%;
   z-index:2;
   transition:transform 0.12s linear, opacity 0.4s ease, filter 0.25s ease;
+  will-change:transform, filter;
 
-  /* “조용한 깊이” + 직조 결 */
-  background:
-    /* 깊이(딥 인디고 톤) */
-    linear-gradient(180deg, #071225 0%, #050e1d 55%, #040a14 100%),
-    /* 직조 결(세로) */
-    repeating-linear-gradient(
-      90deg,
-      rgba(255,255,255,0.035) 0px,
-      rgba(255,255,255,0.035) 1px,
-      rgba(0,0,0,0) 3px,
-      rgba(0,0,0,0) 6px
-    ),
-    /* 트윌(사선) */
-    repeating-linear-gradient(
-      135deg,
-      rgba(255,255,255,0.030) 0px,
-      rgba(255,255,255,0.030) 1px,
-      rgba(0,0,0,0) 7px,
-      rgba(0,0,0,0) 13px
-    );
+  background-image:
+    /* 자연광(아주 얇게) */
+    radial-gradient(circle at 35% 20%, rgba(255,255,255,0.10), rgba(255,255,255,0) 55%),
+    radial-gradient(circle at 70% 55%, rgba(255,255,255,0.07), rgba(255,255,255,0) 60%),
+    /* 비네팅 */
+    radial-gradient(circle at 50% 55%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.20) 60%, rgba(0,0,0,0.58) 100%),
+    /* ✅ 실사 레퍼런스 */
+    url("./ref.png");
+
+  background-repeat:no-repeat;
+  background-size:cover;
+  background-position:center;
 
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,0.04),
-    inset 0 0 140px rgba(0,0,0,0.60);
+    inset 0 0 120px rgba(0,0,0,0.55);
 
-  filter:saturate(1.10) contrast(1.06);
+  filter:saturate(1.06) contrast(1.04);
 }
 
-.denim-left{left:0; transform:translateX(calc(-100% * var(--progress,0)));}
-.denim-right{right:0; transform:translateX(calc(100% * var(--progress,0)));}
+.denim-left{
+  left:0;
+  transform:translateX(calc(-100% * var(--progress,0)));
+  background-position:left center;
+}
+.denim-right{
+  right:0;
+  transform:translateX(calc(100% * var(--progress,0)));
+  background-position:right center;
+}
 
-/* ✅ 미세 노이즈(원단 입자) */
-.denim-left::before,
-.denim-right::before{
+/* ✅ 미세 섬유 노이즈(실사 느낌 핵심 / 아주 약하게) */
+.denim-left::before,.denim-right::before{
   content:"";
   position:absolute; inset:0;
   pointer-events:none;
-  opacity:0.22;
+  opacity:0.14;
   mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E");
-  background-size:260px 260px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+  background-size:320px 320px;
 }
 
-/* ✅ 자연스러운 마모/헤짐(마찰로 바랜 느낌) */
-.denim-left::after,
-.denim-right::after{
+/* ✅ 헤짐/프레이 느낌(너무 “그림” 같지 않게 매우 약하게) */
+.denim-left::after,.denim-right::after{
   content:"";
   position:absolute; inset:0;
   pointer-events:none;
-  opacity:0.28;
+  opacity:0.16;
   mix-blend-mode:screen;
-
-  /* 중앙 seam 근처 + 군데군데 바랜 스팟 */
   background:
-    radial-gradient(ellipse at 92% 40%, rgba(255,255,255,0.14), rgba(255,255,255,0) 60%),
-    radial-gradient(ellipse at 85% 62%, rgba(255,255,255,0.10), rgba(255,255,255,0) 66%),
-    radial-gradient(ellipse at 78% 72%, rgba(255,255,255,0.07), rgba(255,255,255,0) 68%),
-    linear-gradient(to left, rgba(255,255,255,0.08), rgba(255,255,255,0) 40%);
-
-  /* 마모를 불규칙하게: 노이즈 마스크 */
-  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23m)'/%3E%3C/svg%3E");
-  -webkit-mask-size:320px 320px;
+    radial-gradient(ellipse at 70% 45%, rgba(255,255,255,0.16), rgba(255,255,255,0) 58%),
+    radial-gradient(ellipse at 62% 55%, rgba(255,255,255,0.10), rgba(255,255,255,0) 62%),
+    radial-gradient(ellipse at 68% 66%, rgba(255,255,255,0.07), rgba(255,255,255,0) 66%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.18) 0px,
+      rgba(255,255,255,0.18) 1px,
+      rgba(255,255,255,0.0) 3px,
+      rgba(255,255,255,0.0) 8px
+    );
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23m)'/%3E%3C/svg%3E");
+  -webkit-mask-size:360px 360px;
   -webkit-mask-repeat:repeat;
-          mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23m)'/%3E%3C/svg%3E");
-          mask-size:320px 320px;
+          mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23m)'/%3E%3C/svg%3E");
+          mask-size:360px 360px;
           mask-repeat:repeat;
 }
+.denim-right::after{ transform:scaleX(-1); opacity:0.12; }
 
-/* 오른쪽은 방향 반전 + 약하게 */
-.denim-right::after{ transform:scaleX(-1); opacity:0.24; }
+/* 중앙 seam 라인(아주 얇게) */
+.denim-left{ box-shadow: inset -1px 0 0 rgba(255,255,255,0.05), inset 0 0 120px rgba(0,0,0,0.55); }
+.denim-right{ box-shadow: inset 1px 0 0 rgba(255,255,255,0.05), inset 0 0 120px rgba(0,0,0,0.55); }
 
-/* seam(중앙 가장자리) 아주 얇게 */
-.denim-left{ box-shadow: inset -1px 0 0 rgba(255,255,255,0.055), inset 0 0 140px rgba(0,0,0,0.60); }
-.denim-right{ box-shadow: inset 1px 0 0 rgba(255,255,255,0.055), inset 0 0 140px rgba(0,0,0,0.60); }
-
-/* ✅ 지퍼 열릴 때 천 흔들림 */
+/* 지퍼 열릴 때 천 흔들림 */
 .denim-shake-left{ animation:shakeLeft 0.42s ease-in-out; }
 .denim-shake-right{ animation:shakeRight 0.42s ease-in-out; }
 @keyframes shakeLeft{
@@ -108,42 +111,34 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   100%{ transform:translateX(calc(100% * var(--progress,0))); }
 }
 
-/* ================= 중앙 지퍼 라인 (톱니 느낌) ================= */
+/* ================= 중앙 지퍼 라인(톱니 느낌) ================= */
 .zipper-line{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
   width:14px;height:100%;
   z-index:3;transition:opacity 0.4s ease;
   background:linear-gradient(#cfcfcf,#6f6f6f);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.10),
-    0 0 30px rgba(255,255,255,0.06);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.10), 0 0 30px rgba(255,255,255,0.06);
 }
 .zipper-line::before{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    repeating-linear-gradient(
-      to bottom,
+  content:""; position:absolute; inset:0;
+  background:repeating-linear-gradient(to bottom,
       rgba(0,0,0,0.35) 0px,
       rgba(0,0,0,0.35) 6px,
       rgba(255,255,255,0.35) 6px,
       rgba(255,255,255,0.35) 12px
-    );
-  opacity:0.55;
-  mix-blend-mode:overlay;
+  );
+  opacity:0.55; mix-blend-mode:overlay;
 }
 .zipper-line::after{
   content:"";
   position:absolute; left:50%; top:0; transform:translateX(-50%);
   width:8px; height:100%;
-  background:
-    repeating-linear-gradient(
-      to bottom,
+  background:repeating-linear-gradient(to bottom,
       rgba(255,255,255,0.00) 0px,
       rgba(255,255,255,0.00) 6px,
       rgba(255,255,255,0.22) 6px,
       rgba(255,255,255,0.22) 10px
-    );
+  );
   opacity:0.55;
 }
 
@@ -158,11 +153,8 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   width:100%;height:100%;
   background:linear-gradient(#dcdcdc,#8e8e8e);
   border-radius:8px;
-  position:relative;
-  overflow:hidden;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.20),
-    0 10px 26px rgba(0,0,0,0.35);
+  position:relative; overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.20), 0 10px 26px rgba(0,0,0,0.35);
 }
 .metal::after{
   content:"";
@@ -185,19 +177,14 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 }
 .zipper-head.is-open .metal::after{ animation:none; opacity:0.12; }
 
-/* ================= 내부 (안감 느낌) ================= */
+/* ================= 내부 ================= */
 .inside{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0) 55%),
-    repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 2px, rgba(0,0,0,0) 7px, rgba(0,0,0,0) 12px),
-    linear-gradient(180deg, #080808 0%, #050505 100%);
+  position:absolute;inset:0;background:#0b0b0b;
   display:flex;justify-content:center;align-items:center;
   clip-path:polygon(50% 0%,50% 0%,50% 100%,50% 100%);
   transition:clip-path 0.8s ease;z-index:1;
 }
 .inside.open{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);}
-
 .center-wrap{display:flex;flex-direction:column;align-items:center;}
 .logo{
   opacity:0;transform:translateY(20px);
@@ -239,25 +226,20 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 }
 .collection-section.active{opacity:1;pointer-events:auto;}
 
-/* 가로 1줄 나열(스크롤) */
 .frame-wrapper{
   width:100%;
   display:flex;
   gap:60px;
   padding:0 60px;
-  overflow-x:auto;
-  overflow-y:hidden;
+  overflow-x:auto; overflow-y:hidden;
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
 }
 .frame-wrapper::-webkit-scrollbar{display:none;}
-
 .frame{
-  min-width:420px;
-  height:340px;
+  min-width:420px; height:340px;
   flex-shrink:0;
   scroll-snap-align:center;
-
   border:1px solid rgba(255,255,255,0.18);
   display:flex;justify-content:center;align-items:center;
   font-size:20px;letter-spacing:0.3em;color:#fff;
@@ -271,7 +253,6 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 .collection-section.active .frame:nth-child(3){transition-delay:0.4s;}
 .collection-section.active .frame:nth-child(4){transition-delay:0.5s;}
 .frame:hover{border-color:#fff;transform:scale(1.03);}
-
 @media (max-width: 520px){
   .frame-wrapper{gap:20px;padding:0 20px;}
   .frame{min-width:82vw;height:300px;}
@@ -285,11 +266,8 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   z-index:20;
 }
 .category-page.active{opacity:1;pointer-events:auto;}
-
 .back-btn{
-  position:absolute;
-  top:24px; left:24px;
-  z-index:25;
+  position:absolute; top:24px; left:24px; z-index:25;
   border:1px solid rgba(255,255,255,0.25);
   background:transparent;color:#fff;
   padding:10px 14px;border-radius:999px;
@@ -297,22 +275,16 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   cursor:pointer;
 }
 .back-btn:hover{border-color:#fff;}
-
 .category-title{
-  position:absolute;
-  top:30px; left:50%;
+  position:absolute; top:30px; left:50%;
   transform:translateX(-50%);
   z-index:24;
   font-size:18px;letter-spacing:0.35em;
-  opacity:0.9;
-  text-align:center;
+  opacity:0.9; text-align:center;
   pointer-events:none;
 }
-
-/* Controls */
 .controls{
-  position:absolute;
-  top:78px; left:24px; right:24px;
+  position:absolute; top:78px; left:24px; right:24px;
   display:flex; gap:12px; align-items:center;
   z-index:24;
 }
@@ -339,24 +311,20 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   outline:none;
   cursor:pointer;
 }
-
 .grid{
-  position:absolute;left:24px;right:24px;top:130px;bottom:24px;
+  position:absolute; left:24px; right:24px; top:130px; bottom:24px;
   overflow:auto;
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
   gap:18px;
   padding-bottom:24px;
 }
-@media (max-width: 900px){
-  .grid{grid-template-columns:repeat(2, minmax(0,1fr));}
-}
+@media (max-width: 900px){ .grid{grid-template-columns:repeat(2, minmax(0,1fr));} }
 @media (max-width: 520px){
   .controls{flex-direction:column; align-items:stretch;}
   .sort,.price,.search{width:100%;}
   .grid{ top:170px; }
 }
-
 .card{
   border:1px solid rgba(255,255,255,0.16);
   border-radius:16px;
@@ -365,7 +333,6 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   transition:transform 0.2s ease, border-color 0.2s ease;
 }
 .card:hover{transform:translateY(-2px);border-color:#fff;}
-
 .thumb{
   height:180px;
   background:
@@ -407,9 +374,7 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
   display:grid;grid-template-columns:1.2fr 1fr;
   gap:0;
 }
-@media (max-width: 800px){
-  .modal-content{grid-template-columns:1fr;}
-}
+@media (max-width: 800px){ .modal-content{grid-template-columns:1fr;} }
 .modal-image{
   min-height:340px;
   background:
@@ -436,7 +401,6 @@ body{overflow:hidden;background:#000;color:#fff;font-family:'Playfair Display', 
 </head>
 
 <body>
-
 <div class="denim-left"></div>
 <div class="denim-right"></div>
 <div class="zipper-line"></div>
@@ -566,7 +530,7 @@ const DATA = {
 
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-// ✅ reload면 해시 제거 → “자동 지퍼 오픈” 흐름을 항상 타게 함
+/* ✅ reload이면 해시를 지워서 메뉴/컬렉션으로 점프 방지 */
 const __nav = performance.getEntriesByType("navigation")[0];
 if (__nav && __nav.type === "reload") {
   history.replaceState(null, "", window.location.pathname);
@@ -576,10 +540,8 @@ function openZipper(){
   if (opened) return;
   opened = true;
 
-  // 연출: 힌트 숨김 + 데님 흔들림 + 금속광택 약화
   hint?.classList.remove("show");
   hint?.classList.add("hide");
-
   zipper.classList.add("is-open");
 
   denimLeft.classList.add("denim-shake-left");
@@ -607,7 +569,6 @@ function openZipper(){
   },500);
 }
 
-/* progress(0~1) */
 function setProgress(progress){
   const vh = window.innerHeight;
   const zipperH = zipper.offsetHeight || 60;
@@ -620,7 +581,6 @@ function setProgress(progress){
   zipper.style.top = y + "px";
 }
 
-/* 드래그 move */
 function move(y){
   if(opened) return;
 
@@ -716,7 +676,7 @@ function applyControlsAndRender(){
 
     const open = ()=> {
       openModal(currentCat, p);
-      location.hash = `product=${encodeURIComponent(currentCat)}|${encodeURIComponent(p.name)}`;
+      location.hash = \`product=\${encodeURIComponent(currentCat)}|\${encodeURIComponent(p.name)}\`;
     };
 
     card.addEventListener("click", open);
@@ -750,7 +710,7 @@ function openCategory(cat){
   renderCategory(cat);
   categoryPage.classList.add("active");
   categoryPage.setAttribute("aria-hidden","false");
-  location.hash = `category=${encodeURIComponent(cat)}`;
+  location.hash = \`category=\${encodeURIComponent(cat)}\`;
 }
 
 function closeCategory(){
@@ -794,10 +754,9 @@ window.addEventListener("keydown",(e)=>{
   }
 });
 
-/* ✅ 해시 복원 (단, reload 시 해시를 지워버렸기 때문에 자동오픈이 우선됨) */
+/* 해시 복원(일반 back/forward) */
 function restoreFromHash(){
   const h = (location.hash || "").replace("#","");
-
   if(!h) return;
 
   if(h === "collection"){
@@ -842,19 +801,14 @@ function restoreFromHash(){
 window.addEventListener("hashchange", restoreFromHash);
 restoreFromHash();
 
-/* =============================
-   요구사항:
-   - 첫 진입: 자동 인트로 ❌ (사용자가 직접 지퍼)
-   - 새로고침: 자동 지퍼 다운 ✅ + 자동 openZipper ✅ (로고/메뉴 뜨게)
-============================= */
+/* ✅ 첫 진입: 수동 / reload: 자동 내려감 + 자동 오픈 */
 function runAutoZipperOnReload(){
   if(opened || introAnimating) return;
-  if(location.hash) return; // 해시 있으면 복원 우선(일반 이동)
+  if(location.hash) return;
 
   const navEntry = performance.getEntriesByType("navigation")[0];
   const isReload = navEntry && navEntry.type === "reload";
 
-  // 첫 진입: 수동 시작 + 힌트 표시
   if(!isReload){
     setProgress(0);
     hint?.classList.add("show");
@@ -862,13 +816,10 @@ function runAutoZipperOnReload(){
     return;
   }
 
-  // reload: 자동 내려감 → 오픈
   introAnimating = true;
-
   hint?.classList.add("show");
   hint?.classList.remove("hide");
 
-  // 혹시 이전 상태에서 숨겨졌을 수 있으니 확실히 보이기
   denimLeft.style.display = "";
   denimRight.style.display = "";
   zipperLine.style.display = "";
@@ -900,6 +851,17 @@ function runAutoZipperOnReload(){
   requestAnimationFrame(tick);
 }
 runAutoZipperOnReload();
+
+/* ✅ 실사 강화: 아주 미세한 패럴랙스(과하면 인위적이라 “진짜처럼” 최소) */
+(function parallax(){
+  window.addEventListener("mousemove", (e)=>{
+    if(opened) return;
+    const cy = window.innerHeight/2;
+    const my = (e.clientY - cy) / cy;
+    denimLeft.style.backgroundPosition = `left ${50 + my*1.0}%`;
+    denimRight.style.backgroundPosition = `right ${50 + my*1.0}%`;
+  }, {passive:true});
+})();
 </script>
 
 </body>
