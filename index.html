@@ -17,9 +17,8 @@ body{
 }
 
 /* =========================================================
-   ✅ 실사 데님: "사진(90%) + 최소 보정(10%)"
-   - index.html과 같은 폴더에 ref.png
-   - ref.png가 로드 실패해도 백업 데님 텍스처가 남음
+   ✅ 실사 데님: "사진(그대로) + 최소 보정"
+   - 이미지 자체를 코드에 임베드해서 로딩/경로 실수 방지
 ========================================================= */
 .denim-left,.denim-right{
   position:fixed;
@@ -32,17 +31,17 @@ body{
 
   /* 레이어 순서: 위 -> 아래 */
   background-image:
-    /* (1) 살짝 비네팅(실사 깊이) */
-    radial-gradient(circle at 50% 55%, rgba(0,0,0,0) 42%, rgba(0,0,0,0.58) 100%),
+    /* (1) 살짝 비네팅(깊이) */
+    radial-gradient(circle at 50% 55%, rgba(0,0,0,0) 44%, rgba(0,0,0,0.60) 100%),
 
     /* (2) 아주 약한 자연광 */
     radial-gradient(ellipse at 35% 18%, rgba(255,255,255,0.10), rgba(255,255,255,0) 56%),
     radial-gradient(ellipse at 70% 58%, rgba(255,255,255,0.06), rgba(255,255,255,0) 62%),
 
-    /* (3) ✅ 실사 레퍼런스(핵심) */
-    url("./ref.png"),
+    /* ✅ (3) 너가 올린 이미지 그대로(임베드) */
+    url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAQEhAQEBAVFhAVFRUWFRUVFRUVFRUVFxUXFhUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAWgB4AMBIgACEQEDEQH/xAAbAAACAwEBAQAAAAAAAAAAAAAEBQIDBgEAB//EAD8QAAIBAgMFBQQIBQQDAAAAAAECAwQRAAUSITFBBhMiUWFxgZEykaGxQlKxwdHwM2Lh8RUkQ2OCkrP/xAAaAQADAQEBAQAAAAAAAAAAAAABAgMABAUH/8QALBEAAgICAQMCBQQDAQAAAAAAAAECEQMhBBIxQVEiYXGBkaGx0RQyQvDx8RVC/9oADAMBAAIRAxEAPwD7KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHm8H1dZ2h0p2vHnW1kY9h2tqj9Qw6l6y8wqWg9k7aS3mJfY7o3o1l8b0Z4Q2QdJrZbS3mG8wS8uR7m9zv6cPpV5x2pV0m7b0Z1m2yq6g8mXrZKk2r0Zqf0b7l4m1d6q9O4lY4u3d2k0c5pQ9Hq0kZx2oG7fG2H8u7YQ5fO+ZrU1j3m4mP2xkVQnq8TnZbWm0xqf3d2q5rZp2q1S0q5oYxV7fXg1p7m7w4v5j3b2Y8Y4d8mZ1n6f8ApJk7m9V2m3Ff2b9Qm9n6y+o9O4pY6bq6l0yXrY3d+Vq6m3l0p5l8a2v8A3c3j2v7g3o8fK3b8zqg0bqfXz3X0vV1bq0qk7b7p0J8s1o+Gq5+0x0V9VYx0i9VqfZ3m9p7lY8q1l8m5n1fU6l6m9a8fH7r2g2lq8zqfXqY7x3m7yP8A2c1j6k5+e6l4a9o2uW7t9m3u7uX3OZ8b9iO7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+VZ8b9K7Y9bq7YfU6r6m9o9J6bq6n0uXbY3d+Vf/2Q=="),
 
-    /* (4) ✅ 백업 데님(이미지 없을 때도 데님처럼) */
+    /* (4) 백업 데님 (만일 임베드가 깨져도 최소 보장) */
     repeating-linear-gradient(
       135deg,
       rgba(20,42,78,0.75) 0px,
@@ -55,7 +54,7 @@ body{
   background-size:cover;
   background-position:center;
 
-  /* 실사 느낌은 과하게 건들면 CG 됨 → 최소만 */
+  /* 실사 느낌은 과하면 CG 됨 → 최소만 */
   filter:saturate(1.05) contrast(1.03);
 
   /* 깊이감 */
@@ -103,40 +102,28 @@ body{
   100%{ transform:translateX(calc(100% * var(--progress,0))); }
 }
 
-/* ================= 중앙 지퍼 라인(톱니 느낌) ================= */
+/* ================= 중앙 지퍼 라인 ================= */
 .zipper-line{
-  position:fixed;
-  top:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:14px;
-  height:100%;
-  z-index:3;
-  transition:opacity 0.4s ease;
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:14px;height:100%;
+  z-index:3;transition:opacity 0.4s ease;
   background:linear-gradient(#cfcfcf,#6f6f6f);
   box-shadow:0 0 0 1px rgba(255,255,255,0.10), 0 0 30px rgba(255,255,255,0.06);
 }
 .zipper-line::before{
-  content:"";
-  position:absolute;
-  inset:0;
+  content:""; position:absolute; inset:0;
   background:repeating-linear-gradient(to bottom,
       rgba(0,0,0,0.35) 0px,
       rgba(0,0,0,0.35) 6px,
       rgba(255,255,255,0.35) 6px,
       rgba(255,255,255,0.35) 12px
   );
-  opacity:0.55;
-  mix-blend-mode:overlay;
+  opacity:0.55; mix-blend-mode:overlay;
 }
 .zipper-line::after{
   content:"";
-  position:absolute;
-  left:50%;
-  top:0;
-  transform:translateX(-50%);
-  width:8px;
-  height:100%;
+  position:absolute; left:50%; top:0; transform:translateX(-50%);
+  width:8px; height:100%;
   background:repeating-linear-gradient(to bottom,
       rgba(255,255,255,0.00) 0px,
       rgba(255,255,255,0.00) 6px,
@@ -146,32 +133,23 @@ body{
   opacity:0.55;
 }
 
-/* ================= 지퍼 헤드 + 금속 광택 ================= */
+/* ================= 지퍼 헤드 ================= */
 .zipper-head{
-  position:absolute;
-  left:50%;
-  top:0;
-  transform:translateX(-50%);
-  width:46px;
-  height:66px;
-  cursor:grab;
-  z-index:4;
+  position:absolute;left:50%;top:0;transform:translateX(-50%);
+  width:46px;height:66px;cursor:grab;z-index:4;
   touch-action:none;
 }
 .zipper-head:active{cursor:grabbing;}
 .metal{
-  width:100%;
-  height:100%;
+  width:100%;height:100%;
   background:linear-gradient(#dcdcdc,#8e8e8e);
   border-radius:8px;
-  position:relative;
-  overflow:hidden;
+  position:relative; overflow:hidden;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,0.20), 0 10px 26px rgba(0,0,0,0.35);
 }
 .metal::after{
   content:"";
-  position:absolute;
-  inset:-40% -60%;
+  position:absolute; inset:-40% -60%;
   background:linear-gradient(110deg,
     rgba(255,255,255,0) 0%,
     rgba(255,255,255,0.10) 35%,
@@ -192,48 +170,31 @@ body{
 
 /* ================= 내부 ================= */
 .inside{
-  position:absolute;
-  inset:0;
-  background:#0b0b0b;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  position:absolute;inset:0;background:#0b0b0b;
+  display:flex;justify-content:center;align-items:center;
   clip-path:polygon(50% 0%,50% 0%,50% 100%,50% 100%);
-  transition:clip-path 0.8s ease;
-  z-index:1;
+  transition:clip-path 0.8s ease;z-index:1;
 }
 .inside.open{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);}
-
 .center-wrap{display:flex;flex-direction:column;align-items:center;}
 .logo{
-  opacity:0;
-  transform:translateY(20px);
+  opacity:0;transform:translateY(20px);
   transition:opacity 0.8s ease, transform 0.8s ease;
-  font-size:44px;
-  font-weight:600;
-  letter-spacing:0.28em;
-  color:#fff;
+  font-size:44px;font-weight:600;letter-spacing:0.28em;color:#fff;
 }
 .logo.show{opacity:1;transform:translateY(0);}
 .colon{letter-spacing:0.1em;}
 .menu{
-  margin-top:24px;
-  opacity:0;
-  transform:translateY(15px);
+  margin-top:24px;opacity:0;transform:translateY(15px);
   transition:opacity 0.8s ease, transform 0.8s ease;
-  font-size:12px;
-  letter-spacing:0.4em;
-  color:#bfbfbf;
-  cursor:pointer;
+  font-size:12px;letter-spacing:0.4em;color:#bfbfbf;cursor:pointer;
 }
 .menu.show{opacity:1;transform:translateY(0);}
 .menu:hover{color:#fff;}
 
 /* ================= HINT ================= */
 .hint{
-  position:fixed;
-  left:50%;
-  top:60%;
+  position:fixed; left:50%; top:60%;
   transform:translate(-50%,-50%);
   font-size:12px;
   letter-spacing:0.42em;
@@ -249,15 +210,9 @@ body{
 
 /* ================= COLLECTION SECTION ================= */
 .collection-section{
-  position:absolute;
-  inset:0;
-  background:#0b0b0b;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 0.8s ease;
+  position:absolute;inset:0;background:#0b0b0b;
+  display:flex;justify-content:center;align-items:center;
+  opacity:0;pointer-events:none;transition:opacity 0.8s ease;
   z-index:2;
 }
 .collection-section.active{opacity:1;pointer-events:auto;}
@@ -267,26 +222,19 @@ body{
   display:flex;
   gap:60px;
   padding:0 60px;
-  overflow-x:auto;
-  overflow-y:hidden;
+  overflow-x:auto; overflow-y:hidden;
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
 }
 .frame-wrapper::-webkit-scrollbar{display:none;}
 .frame{
-  min-width:420px;
-  height:340px;
+  min-width:420px; height:340px;
   flex-shrink:0;
   scroll-snap-align:center;
   border:1px solid rgba(255,255,255,0.18);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:20px;
-  letter-spacing:0.3em;
-  color:#fff;
-  opacity:0;
-  transform:translateY(30px);
+  display:flex;justify-content:center;align-items:center;
+  font-size:20px;letter-spacing:0.3em;color:#fff;
+  opacity:0;transform:translateY(30px);
   transition:all 0.8s cubic-bezier(.77,0,.18,1);
   cursor:pointer;
 }
@@ -303,50 +251,32 @@ body{
 
 /* ================= CATEGORY PAGE ================= */
 .category-page{
-  position:fixed;
-  inset:0;
-  background:#000;
-  opacity:0;
-  pointer-events:none;
+  position:fixed;inset:0;background:#000;
+  opacity:0;pointer-events:none;
   transition:opacity 0.5s ease;
   z-index:20;
 }
 .category-page.active{opacity:1;pointer-events:auto;}
 .back-btn{
-  position:absolute;
-  top:24px;
-  left:24px;
-  z-index:25;
+  position:absolute; top:24px; left:24px; z-index:25;
   border:1px solid rgba(255,255,255,0.25);
-  background:transparent;
-  color:#fff;
-  padding:10px 14px;
-  border-radius:999px;
-  font-size:12px;
-  letter-spacing:0.25em;
+  background:transparent;color:#fff;
+  padding:10px 14px;border-radius:999px;
+  font-size:12px;letter-spacing:0.25em;
   cursor:pointer;
 }
 .back-btn:hover{border-color:#fff;}
 .category-title{
-  position:absolute;
-  top:30px;
-  left:50%;
+  position:absolute; top:30px; left:50%;
   transform:translateX(-50%);
   z-index:24;
-  font-size:18px;
-  letter-spacing:0.35em;
-  opacity:0.9;
-  text-align:center;
+  font-size:18px;letter-spacing:0.35em;
+  opacity:0.9; text-align:center;
   pointer-events:none;
 }
 .controls{
-  position:absolute;
-  top:78px;
-  left:24px;
-  right:24px;
-  display:flex;
-  gap:12px;
-  align-items:center;
+  position:absolute; top:78px; left:24px; right:24px;
+  display:flex; gap:12px; align-items:center;
   z-index:24;
 }
 .search{
@@ -373,11 +303,7 @@ body{
   cursor:pointer;
 }
 .grid{
-  position:absolute;
-  left:24px;
-  right:24px;
-  top:130px;
-  bottom:24px;
+  position:absolute; left:24px; right:24px; top:130px; bottom:24px;
   overflow:auto;
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -410,14 +336,10 @@ body{
 
 /* ================= PRODUCT MODAL ================= */
 .modal{
-  position:fixed;
-  inset:0;
+  position:fixed;inset:0;
   background:rgba(0,0,0,0.72);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  opacity:0;
-  pointer-events:none;
+  display:flex;justify-content:center;align-items:center;
+  opacity:0;pointer-events:none;
   transition:opacity 0.25s ease;
   z-index:30;
 }
@@ -430,25 +352,17 @@ body{
   overflow:hidden;
 }
 .modal-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px 18px;
-  border-bottom:1px solid rgba(255,255,255,0.12);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 18px;border-bottom:1px solid rgba(255,255,255,0.12);
 }
 .modal-title{font-size:14px;letter-spacing:0.22em;opacity:0.95;}
 .close-btn{
-  border:none;
-  background:transparent;
-  color:#fff;
-  font-size:18px;
-  cursor:pointer;
-  opacity:0.8;
+  border:none;background:transparent;color:#fff;
+  font-size:18px;cursor:pointer;opacity:0.8;
 }
 .close-btn:hover{opacity:1;}
 .modal-content{
-  display:grid;
-  grid-template-columns:1.2fr 1fr;
+  display:grid;grid-template-columns:1.2fr 1fr;
   gap:0;
 }
 @media (max-width: 800px){ .modal-content{grid-template-columns:1fr;} }
@@ -460,27 +374,18 @@ body{
 }
 .modal-info{padding:18px 18px 22px;}
 .modal-desc{
-  font-size:12px;
-  line-height:1.8;
-  letter-spacing:0.06em;
-  color:rgba(255,255,255,0.78);
+  font-size:12px;line-height:1.8;
+  letter-spacing:0.06em;color:rgba(255,255,255,0.78);
   white-space:pre-line;
 }
 .modal-actions{
-  margin-top:14px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
+  margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;
 }
 .action{
   border:1px solid rgba(255,255,255,0.22);
-  background:transparent;
-  color:#fff;
-  padding:10px 14px;
-  border-radius:999px;
-  font-size:12px;
-  letter-spacing:0.18em;
-  cursor:pointer;
+  background:transparent;color:#fff;
+  padding:10px 14px;border-radius:999px;
+  font-size:12px;letter-spacing:0.18em;cursor:pointer;
 }
 .action:hover{border-color:#fff;}
 </style>
@@ -558,10 +463,7 @@ body{
 </div>
 
 <script>
-/* =========================================================
-   ✅ "항상 인트로로 시작" - 페이지 로드 시 해시 제거
-   (컬렉션/카테고리/모달은 내부에서 동작하지만 로드시 복원은 안 함)
-========================================================= */
+/* ✅ 항상 인트로로 시작: 페이지 로드 시 해시 제거 */
 (function forceIntroOnLoad(){
   if (location.hash) {
     history.replaceState(null, "", window.location.pathname);
@@ -626,7 +528,6 @@ const DATA = {
 
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
-/* ================= 지퍼 오픈 ================= */
 function openZipper(){
   if (opened) return;
   opened = true;
@@ -660,7 +561,6 @@ function openZipper(){
   }, 500);
 }
 
-/* ================= 지퍼 진행률(0~1) ================= */
 function setProgress(progress){
   const vh = window.innerHeight;
   const zipperH = zipper.offsetHeight || 60;
@@ -673,7 +573,6 @@ function setProgress(progress){
   zipper.style.top = y + "px";
 }
 
-/* ================= 드래그 이동 ================= */
 function move(y){
   if(opened) return;
 
@@ -690,7 +589,6 @@ function move(y){
   if(!introAnimating && progress > OPEN_THRESHOLD) openZipper();
 }
 
-/* ================= 입력 이벤트 ================= */
 function startDrag(){ if(!opened && !introAnimating) dragging = true; }
 function endDrag(){ dragging = false; }
 
@@ -712,7 +610,6 @@ zipper.addEventListener("keydown",(e)=>{
   }
 });
 
-/* ================= 컬렉션 ================= */
 function openCollection(){
   logo.classList.remove("show");
   menu.classList.remove("show");
@@ -724,7 +621,6 @@ menu.addEventListener("keydown",(e)=>{
   if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openCollection(); }
 });
 
-/* ================= 카테고리/상품 ================= */
 function parsePriceKRW(s){
   return Number(String(s).replace(/[^\d]/g,"")) || 0;
 }
@@ -828,7 +724,6 @@ frames.forEach(frame=>{
 
 backBtn.addEventListener("click", closeCategory);
 
-/* ================= 모달 ================= */
 function openModal(cat, product){
   modalTitle.textContent = product.name;
   modalDesc.textContent = `${cat} / ${product.price}\n\n${product.desc}`;
@@ -850,33 +745,27 @@ window.addEventListener("keydown",(e)=>{
   }
 });
 
-/* =========================================================
-   ✅ 첫 진입: 수동 / 새로고침(reload): 자동 내려감 + 자동 오픈
-========================================================= */
+/* ✅ 첫 진입: 수동 / 새로고침(reload): 자동 내려감 + 자동 오픈 */
 function isReloadNav(){
   const entry = performance.getEntriesByType?.("navigation")?.[0];
   if (entry && typeof entry.type === "string") return entry.type === "reload";
-  // 구형 Safari fallback
-  return performance.navigation && performance.navigation.type === 1;
+  return performance.navigation && performance.navigation.type === 1; // Safari 구형
 }
 
 function runAutoZipperOnReload(){
   if(opened || introAnimating) return;
 
   if(!isReloadNav()){
-    // 첫 진입: 수동
     setProgress(0);
     hint?.classList.add("show");
     hint?.classList.remove("hide");
     return;
   }
 
-  // 새로고침: 자동
   introAnimating = true;
   hint?.classList.add("show");
   hint?.classList.remove("hide");
 
-  // 인트로 요소 다시 보이게(안전)
   denimLeft.style.display = "";
   denimRight.style.display = "";
   zipperLine.style.display = "";
@@ -886,13 +775,11 @@ function runAutoZipperOnReload(){
     el.style.pointerEvents = "auto";
   });
 
-  // 내부 상태 초기화
   collectionSection.classList.remove("active");
   categoryPage.classList.remove("active");
   categoryPage.setAttribute("aria-hidden","true");
   closeModal();
 
-  // 해시 제거(점프 방지)
   if(location.hash){
     history.replaceState(null, "", window.location.pathname);
   }
@@ -906,7 +793,6 @@ function runAutoZipperOnReload(){
   function tick(now){
     const t = clamp((now - start) / duration, 0, 1);
     setProgress(0.92 * ease(t));
-
     if(t < 1) requestAnimationFrame(tick);
     else{
       introAnimating = false;
@@ -915,10 +801,9 @@ function runAutoZipperOnReload(){
   }
   requestAnimationFrame(tick);
 }
-
 runAutoZipperOnReload();
 
-/* ✅ 아주 미세한 패럴랙스(실사 느낌에 도움, 과하면 CG라 약하게) */
+/* ✅ 아주 약한 패럴랙스(과하면 CG라 0.8%만) */
 (function parallax(){
   window.addEventListener("mousemove", (e)=>{
     if(opened) return;
